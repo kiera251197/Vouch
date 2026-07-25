@@ -4,10 +4,10 @@ error_reporting(E_ALL);
 
 session_start();
 
-$db = new mysqli("localhost", "root", "", "vouch_db");
+$db = new mysqli("127.0.0.1", "root", "", "vouch_db", 3307);
 
 if ($db->connect_error) {
-    die("Connection failed: " . $db->connect_error);
+  die("Connection failed: " . $db->connect_error);
 }
 
 $errors = [];
@@ -20,91 +20,106 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Login
     if ($action === 'login') {
-        $activeForm = 'login';
+      $activeForm = 'login';
 
-        $email = trim($_POST['email'] ?? '');
-        $password = $_POST['password'] ?? '';
+      $email = trim($_POST['email'] ?? '');
+      $password = $_POST['password'] ?? '';
 
-        if ($email === '' || $password === '') {
-            $errors[] = 'Please fill in both email and password';
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'Please enter a valid email address';
-        }
+      if ($email === '' || $password === '') {
+        $errors[] = 'Please fill in both email and password';
+      } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'Please enter a valid email address';
+      }
 
-        if (empty($errors)) {
-            $stmt = $db->prepare("SELECT user_id, password, user_role FROM Users WHERE email = ?");
-            $stmt->bind_param("s", $email);
-            $stmt->execute();
-            $result = $stmt->get_result();
+      if (empty($errors)) {
+        $stmt = $db->prepare("SELECT U.user_id, password, U.user_role, P.full_name FROM Users U LEFT JOIN Profiles P ON U.user_id = P.user_id WHERE U.email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-            if ($user = $result->fetch_assoc()) {
-                if (password_verify($password, $user['password'])) {
-                    $_SESSION['userId'] = $user['user_id'];
-                    $_SESSION['userRole'] = $user['user_role'];
-                    
-                    if ($user['user_role'] === 'single') {
-                        header("Location: singleDashboard.php");
-                    } else {
-                        header("Location: matchmakerDashboard.php");
-                    }
-                    exit();
+        if ($user = $result->fetch_assoc()) {
+            if (password_verify($password, $user['password'])) {
+                $_SESSION['userId'] = $user['user_id'];
+                $_SESSION['userRole'] = $user['user_role'];
+                $_SESSION['fullName'] = $user['full_name'];
+
+                //If they haven't chosen a role yet then it'll send them to setup
+                if (empty($user['user_role'])) {
+                  header("Location: setupProfile.php");
+                } elseif ($user['user_role'] === 'single') {
+                  header("Location: singleDashboard.php");
                 } else {
-                    $errors[] = 'Invalid password entered.';
+                  header("Location: matchmakerDashboard.php");
                 }
+                exit();
             } else {
-                $errors[] = 'No account found with that email.';
+              $errors[] = 'Invalid password entered';
             }
-            $stmt->close();
+        } else {
+          $errors[] = 'No account found with that email';
         }
+        $stmt->close();
+      }
+
+
+
+
+
 
     // Sign Up
     } elseif ($action === 'signup') {
         $activeForm = 'signup';
 
         $fullName = trim($_POST['name'] ?? '');
-        $email = trim($_POST['email'] ?? '');
+        $email    = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
-        $userRole = $_POST['userRole'] ?? '';
 
-        if ($fullName === '' || $email === '' || $password === '' || $userRole === '') {
-            $errors[] = 'Please fill in all fields, including choosing a role.';
+        if ($fullName === '' || $email === '' || $password === '') {
+          $errors[] = 'Please fill in all fields';
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'Please enter a valid email address.';
+          $errors[] = 'Please enter a valid email address';
         } elseif (strlen($password) < 6) {
-            $errors[] = 'Password must be at least 6 characters.';
+           $errors[] = 'Password must be at least 6 characters';
         }
 
         if (empty($errors)) {
-            // Check if email already exists
-            $checkEmail = $db->prepare("SELECT user_id FROM Users WHERE email = ?");
-            $checkEmail->bind_param("s", $email);
-            $checkEmail->execute();
-            $checkResult = $checkEmail->get_result();
+        
+          //Checks if email already exists
+          $checkEmail = $db->prepare("SELECT user_id FROM Users WHERE email = ?");
+          $checkEmail->bind_param("s", $email);
+          $checkEmail->execute();
+          $checkResult = $checkEmail->get_result();
 
-            if ($checkResult->num_rows > 0) {
-                $errors[] = 'This email is already registered.';
-            } else {
-                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+          if ($checkResult->num_rows > 0) {
+              $errors[] = 'This email is already registered';
+          } else {
+              $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-                // Insert into Users Table
-                $insertUser = $db->prepare("INSERT INTO Users (email, password, user_role) VALUES (?, ?, ?)");
-                $insertUser->bind_param("sss", $email, $hashedPassword, $userRole);
-
-                if ($insertUser->execute()) {
-                    $newUserId = $insertUser->insert_id;
-
-                    // Insert display name into Profiles Table
-                    $insertProfile = $db->prepare("INSERT INTO Profiles (user_id, full_name) VALUES (?, ?)");
-                    $insertProfile->bind_param("is", $newUserId, $fullName);
-                    $insertProfile->execute();
-                    $insertProfile->close();
-
-                    $success = 'Account created successfully! You can now log in.';
-                    $activeForm = 'login';
-                } else {
-                    $errors[] = 'Something went wrong during registration. Please try again.';
-                }
+              //Adds user into the users table
+              $insertUser = $db->prepare("INSERT INTO Users (email, password) VALUES (?, ?)");
+                $insertUser->bind_param("ss", $email, $hashedPassword);
+                $insertUser->execute();
+                $newUserId = $insertUser->insert_id;
                 $insertUser->close();
+
+                //Adds a display name into the profiles table
+                $insertProfile = $db->prepare("INSERT INTO Profiles (user_id, full_name) VALUES (?, ?)");
+                $insertProfile->bind_param("is", $newUserId, $fullName);
+                $insertProfile->execute();
+                $insertProfile->close();
+
+                $db->commit();
+
+                $success = 'Account created successfully! Proceed to login';
+                $activeForm = 'login';
+
+                header("Location: setupProfile.php");
+                exit();
+
+              } catch (Exception $e) {
+                  $db->rollback();
+                  $errors[] = 'Something went wrong during registration. Please try again.';
+              }
             }
             $checkEmail->close();
         }
