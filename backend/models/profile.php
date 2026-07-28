@@ -6,6 +6,7 @@ class Profile {
         $this->db = $db;
     }
 
+    // Retrieves the display name for a user
     public function getDisplayName(int $userId): string {
         $stmt = $this->db->prepare("SELECT full_name FROM Profiles WHERE user_id = ?");
         $stmt->bind_param("i", $userId);
@@ -15,6 +16,7 @@ class Profile {
         return $res['full_name'] ?? 'User';
     }
 
+    // Updates the profile information for a Single user
     public function updateSingleProfile(int $userId, array $data, ?string $photoPath): void {
         if ($photoPath) {
             $stmt = $this->db->prepare("UPDATE Profiles SET birth_year=?, gender=?, location=?, occupation=?, hobbies=?, bio=?, hook=?, picture_url=? WHERE user_id=?");
@@ -27,6 +29,7 @@ class Profile {
         $stmt->close();
     }
 
+    // Updates the profile information for a Matchmaker user
     public function updateMatchmakerProfile(int $userId, array $data, ?string $photoPath): void {
         if ($photoPath) {
             $stmt = $this->db->prepare("UPDATE Profiles SET relationship_to_single=?, credentials=?, picture_url=? WHERE user_id=?");
@@ -39,6 +42,7 @@ class Profile {
         $stmt->close();
     }
 
+    // Updates the dating preferences for a Single user
     public function updatePreferences(int $userId, string $targetGender, string $targetAges): void {
         $stmt = $this->db->prepare("INSERT INTO Singles_Preferences (user_id, target_gender, target_ages) VALUES (?, ?, ?)
             ON DUPLICATE KEY UPDATE target_gender = VALUES(target_gender), target_ages = VALUES(target_ages)");
@@ -47,6 +51,7 @@ class Profile {
         $stmt->close();
     }
 
+    // Retrieves the dating preferences for a Single user
     public function addGalleryPhoto(int $userId, string $photoUrl): void {
         $stmt = $this->db->prepare("INSERT INTO Profile_Photos (user_id, photo_url) VALUES (?, ?)");
         $stmt->bind_param("is", $userId, $photoUrl);

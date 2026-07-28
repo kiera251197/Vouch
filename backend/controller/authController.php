@@ -10,6 +10,7 @@ class AuthController {
         $this->userModel = new User($db);
     }
 
+    // Handles user login
     public function login(string $email, string $password): array {
         if (empty($email) || empty($password)) {
             return ['error' => 'Please fill in both email and password'];
@@ -34,6 +35,7 @@ class AuthController {
         return ['error' => 'Invalid email or password'];
     }
 
+    // Handles user sign up
     public function signup(string $fullName, string $email, string $password): array {
         if (empty($fullName) || empty($email) || empty($password)) {
             return ['error' => 'Please fill in all fields'];

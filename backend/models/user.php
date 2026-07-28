@@ -6,6 +6,7 @@ class User {
         $this->db = $db;
     }
 
+    // Finds a user by their email address
     public function findByEmail(string $email): ?array {
         $stmt = $this->db->prepare("SELECT U.user_id, U.password, U.user_role, P.full_name FROM Users U LEFT JOIN Profiles P ON U.user_id = P.user_id WHERE U.email = ?");
         $stmt->bind_param("s", $email);
@@ -15,6 +16,7 @@ class User {
         return $user ?: null;
     }
 
+    // Registers a new user and creates a profile for them
     public function registerUser(string $fullName, string $email, string $password): ?int {
         try {
             $this->db->begin_transaction();
@@ -39,6 +41,7 @@ class User {
         }
     }
 
+    // Updates the role of a user
     public function updateRole(int $userId, string $role): void {
         $stmt = $this->db->prepare("UPDATE Users SET user_role = ? WHERE user_id = ?");
         $stmt->bind_param("si", $role, $userId);

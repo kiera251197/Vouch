@@ -9,19 +9,21 @@ $auth = new AuthController();
 $errors = [];
 $activeForm = 'login';
 
+// Handles form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     if ($action === 'login') {
-        $activeForm = 'login';
-        $res = $auth->login($_POST['email'] ?? '', $_POST['password'] ?? '');
-        if (isset($res['error'])) $errors[] = $res['error'];
+      $activeForm = 'login';
+      $res = $auth->login($_POST['email'] ?? '', $_POST['password'] ?? '');
+      if (isset($res['error'])) $errors[] = $res['error'];
     } elseif ($action === 'signup') {
-        $activeForm = 'signup';
-        $res = $auth->signup($_POST['name'] ?? '', $_POST['email'] ?? '', $_POST['password'] ?? '');
-        if (isset($res['error'])) $errors[] = $res['error'];
+      $activeForm = 'signup';
+      $res = $auth->signup($_POST['name'] ?? '', $_POST['email'] ?? '', $_POST['password'] ?? '');
+      if (isset($res['error'])) $errors[] = $res['error'];
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,6 +57,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="switchLine">Don't Have an Account? <button type="button" onclick="showForm('signup')">Sign Up</button></div>
     </div>
 
+
+
+
+    
     <!-- Sign Up -->
     <div id="signupForm" class="formBlock <?= $activeForm === 'signup' ? 'active' : '' ?>">
       <div class="logoInline"><img src="../assets/images/blackLogo.png" alt="vouch logo"></div>

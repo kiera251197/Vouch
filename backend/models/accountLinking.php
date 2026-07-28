@@ -6,6 +6,7 @@ class AccountLinking {
         $this->db = $db;
     }
 
+    // Ensures a Single user has a unique code
     public function ensureCode(int $userId): string {
         $check = $this->db->prepare("SELECT link_code FROM Account_Linking WHERE single_user_id = ? AND matchmaker_user_id IS NULL");
         $check->bind_param("i", $userId);
@@ -16,6 +17,7 @@ class AccountLinking {
         return $existing ? $existing['link_code'] : $this->generateNewCode($userId);
     }
 
+    // Generates a new unique code for a Single user
     public function generateNewCode(int $userId): string {
         // Delete older unclaimed codes if any
         $del = $this->db->prepare("DELETE FROM Account_Linking WHERE single_user_id = ? AND matchmaker_user_id IS NULL");
@@ -32,6 +34,7 @@ class AccountLinking {
         return $newCode;
     }
 
+    // Claims a code for a Matchmaker user
     public function claimCode(int $matchmakerId, string $code): bool {
         $stmt = $this->db->prepare("SELECT link_id FROM Account_Linking WHERE link_code = ? AND matchmaker_user_id IS NULL");
         $stmt->bind_param("s", $code);

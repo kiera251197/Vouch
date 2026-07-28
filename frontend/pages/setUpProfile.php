@@ -18,7 +18,7 @@ $userId = $_SESSION['userId'];
 $errors = [];
 $activeStep = 'step1';
 
-// Form Handling routed through Controller
+// Form handling 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $role = $_POST['userRole'] ?? '';
 
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Fetch display data through Model helper methods on the controller
+// Fetch display data
 $displayName = $profileCtrl->profileModel->getDisplayName($userId);
 $generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
 ?>
@@ -48,7 +48,7 @@ $generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vouch - Profile Set Up</title>
+    <title>Vouch Profile Set Up</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -87,6 +87,10 @@ $generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
     <form method="POST" action="setupProfile.php" enctype="multipart/form-data" id="setupForm">
         <input type="hidden" name="userRole" id="userRoleInput">
 
+
+
+
+
         <!-- Role selection -->
         <div class="stepBlock" id="step1">
             <div class="logoInline">
@@ -100,7 +104,11 @@ $generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
             </div>
         </div>
 
-        <!-- Single Step 2: My Details -->
+
+
+
+
+        <!-- Single step 2 - My details -->
         <div class="stepBlock" id="sStep2">
             <div class="logoInline">
                 <img src="../assets/images/blackLogo.png" alt="vouch logo">
@@ -146,7 +154,7 @@ $generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
                     <option value="technology">Technology</option>
                     <option value="fashion">Fashion</option>
                     <option value="photography">Photography</option>
-                    <option value="outdoors">Outdoors</option>
+                    <option value="outdoors">Hiking</option>
                     <option value="other">Other</option>
                 </select>
             </div>
@@ -164,7 +172,11 @@ $generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
             </div>
         </div>
 
-        <!-- Single Step 3: Dating Preferences & Bio -->
+
+
+
+
+        <!-- Single step 3 - Dating preferences & bio -->
         <div class="stepBlock" id="sStep3">
             <div class="logoInline">
                 <img src="../assets/images/blackLogo.png" alt="vouch logo">
@@ -213,7 +225,11 @@ $generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
             </div>
         </div>
 
-        <!-- Single Step 4: Photos -->
+
+
+
+
+        <!-- Single step 4 - Photos -->
         <div class="stepBlock" id="sStep4">
             <div class="logoInline">
                 <img src="../assets/images/blackLogo.png" alt="vouch logo">
@@ -251,7 +267,11 @@ $generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
             </div>
         </div>
 
-        <!-- Single Step 5: Linking -->
+
+
+
+
+        <!-- Single step 5 - Linking accounts-->
         <div class="stepBlock" id="sStep5">
             <div class="logoInline">
                 <img src="../assets/images/blackLogo.png" alt="vouch logo">
@@ -279,7 +299,11 @@ $generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
             </div>
         </div>
 
-        <!-- Matchmaker Step 2: Details -->
+
+
+
+
+        <!-- Matchmaker step 2 - Details -->
         <div class="stepBlock" id="mStep2">
             <div class="logoInline">
                 <img src="../assets/images/blackLogo.png" alt="vouch logo">
@@ -325,13 +349,17 @@ $generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
             </div>
         </div>
 
-        <!-- Matchmaker Step 3: Linking Input -->
+
+
+
+
+        <!-- Matchmaker step 3 - Linking accounts -->
         <div class="stepBlock" id="mStep3">
             <div class="logoInline">
                 <img src="../assets/images/blackLogo.png" alt="vouch logo">
             </div>
             <h1>Bring In Your Circle</h1>
-            <h3>LINKING</h3>
+            <h3>LINKING ACCOUNT</h3>
             <small>Input the unique 5 digit code to successfully link your profiles together</small>
 
             <div class="field codeInputWrap">
@@ -375,7 +403,6 @@ $generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
     }
 
     function regenerateCode() {
-        // Correct relative path from frontend/pages/ to backend/routes/
         fetch('../../backend/routes/regenerateCode.php')
             .then(res => res.json())
             .then(data => {
@@ -386,7 +413,7 @@ $generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
             .catch(err => console.error("Error regenerating code:", err));
     }
 
-    // Reopen to active step on submission error
+    // Reopen to active step if a submission error occurs
     goToStep('<?= $activeStep ?>');
 </script>
 
