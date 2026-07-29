@@ -28,7 +28,7 @@ class AuthController {
             if (empty($user['user_role'])) {
                 header("Location: setupProfile.php");
             } elseif ($user['user_role'] === 'single') {
-                header("Location: singleDashboard.php");
+                header("Location: dashboardSingle.php");
             } else {
                 header("Location: dashboardMatchmaker.php");
             }
