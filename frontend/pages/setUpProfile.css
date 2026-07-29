@@ -19,16 +19,29 @@
     box-sizing: border-box; 
 }
 
-body {
+html, body {
     margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+}
+
+body {
     font-family: var(--fontBody);
     color: var(--night);
-    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
-    background: url(../assets/images/pinkBG.jpg) center/100% 100% no-repeat;
+    background-image: url('../assets/images/pinkBG.jpg');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+body.matchmakerMode {
+    background-image: url('../assets/images/orangeBG.jpg') !important;
 }
 
 .card {
@@ -140,9 +153,10 @@ small {
 
 .navBtn img,
 .arrowIcon {
-    width: 24px !important;
-    height: auto !important;
-    display: block;
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    display: inline-block;
 }
 
 .arrowRight {
@@ -310,21 +324,24 @@ select.fieldHalf:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 24px;
-    flex-wrap: wrap;
-    gap: 12px;
+    margin-top: 25px;
+    width: 100%;
 }
 
 .navBtn {
-    background: none;
+    background: transparent;
     border: none;
-    font-family: var(--fontPrimary);
-    font-size: 16px;
-    font-weight: 400;
-    color: var(--night);
+    outline: none;
     cursor: pointer;
-    padding: 8px 0;
-    gap: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; 
+    font-family: var(--fontBody);
+    font-size: 14px;
+    font-weight: 400 !important;
+    color: var(--night);
+    padding: 6px 10px;
+    transition: opacity 0.2s ease;
 }
 
 .navBtn:hover {

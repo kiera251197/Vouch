@@ -10,7 +10,7 @@ if (!isset($_SESSION['userId'])) {
     exit();
 }
 
-// Loads the backend controller
+// Loads the backend controller for profiles
 require_once __DIR__ . '/../../backend/controller/profileController.php';
 
 $profileCtrl = new ProfileController();
@@ -57,10 +57,10 @@ $generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="setupProfile.css">
+    <link rel="stylesheet" href="setupProfile.css?v=2">
 </head>
 
-<body>
+<body class="<?= ($activeStep === 'mStep2' || $activeStep === 'mStep3') ? 'matchmakerMode' : '' ?>">
 
 <div class="card">
 
@@ -385,12 +385,26 @@ $generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
 <script>
     function chooseRole(role) {
         document.getElementById('userRoleInput').value = role;
+
+        if (role === 'matchmaker') {
+            document.body.classList.add('matchmakerMode');
+        } else {
+            document.body.classList.remove('matchmakerMode');
+        }
         goToStep(role === 'single' ? 'sStep2' : 'mStep2');
     }
 
     function goToStep(stepId) {
         document.querySelectorAll('.stepBlock').forEach(block => block.classList.remove('active'));
-        document.getElementById(stepId).classList.add('active');
+
+        const activeBlock = document.getElementById(stepId);
+        if (activeBlock) {
+            activeBlock.classList.add('active');
+        }
+        
+        if (stepId === 'step1') {
+            document.body.classList.remove('matchmakerMode');
+        }
     }
 
     function showFileName(input, box) {
