@@ -4,42 +4,23 @@ error_reporting(E_ALL);
 
 session_start();
 
-// Redirect if not logged in
-if (!isset($_SESSION['userId'])) {
-    header("Location: index.php");
-    exit();
-}
-
-// Loads the backend controller for profiles
-require_once __DIR__ . '/../../backend/controller/profileController.php';
-
-$profileCtrl = new ProfileController();
-$userId = $_SESSION['userId'];
 $errors = [];
 $activeStep = 'step1';
 
-// Form handling 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $role = $_POST['userRole'] ?? '';
+$displayName = $_SESSION['userName'] ?? 'Sophia Walker';
+$generatedCode = '6 7 9 1 1'; 
 
-    if ($role === 'single') {
-        $res = $profileCtrl->processSingleSetup($userId, $_POST, $_FILES);
-        if (isset($res['error'])) {
-            $errors[] = $res['error'];
-            $activeStep = $res['step'];
-        }
-    } elseif ($role === 'matchmaker') {
-        $res = $profileCtrl->processMatchmakerSetup($userId, $_POST, $_FILES);
-        if (isset($res['error'])) {
-            $errors[] = $res['error'];
-            $activeStep = $res['step'];
-        }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $role = $_POST['userRole'] ?? 'single';
+
+    if ($role === 'matchmaker') {
+        header("Location: dashboardMatchmaker.php");
+        exit();
+    } else {
+        header("Location: dashboardSingle.php");
+        exit();
     }
 }
-
-// Fetch display data
-$displayName = $profileCtrl->profileModel->getDisplayName($userId);
-$generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
 ?>
 
 <!DOCTYPE html>
@@ -417,14 +398,8 @@ $generatedCode = $profileCtrl->linkingModel->ensureCode($userId);
     }
 
     function regenerateCode() {
-        fetch('../../backend/routes/regenerateCode.php')
-            .then(res => res.json())
-            .then(data => {
-                if (data.code) {
-                    document.getElementById('codeDisplay').textContent = data.code.split('').join(' ');
-                }
-            })
-            .catch(err => console.error("Error regenerating code:", err));
+        const randomCode = Math.floor(10000 + Math.random() * 90000).toString();
+        document.getElementById('codeDisplay').textContent = randomCode.split('').join(' ');
     }
 
     // Reopen to active step if a submission error occurs

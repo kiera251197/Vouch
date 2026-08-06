@@ -41,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 
   <div class="formPanel">
+    
     <!-- Login -->
     <div id="loginForm" class="formBlock <?= $activeForm === 'login' ? 'active' : '' ?>">
       <div class="logoInline"><img src="../assets/images/blackLogo.png" alt="vouch logo"></div>
