@@ -8,11 +8,14 @@ class User {
 
     // Finds a user by their email address
     public function findByEmail(string $email): ?array {
-        $stmt = $this->db->prepare("SELECT U.user_id, U.password, U.user_role, P.full_name FROM Users U LEFT JOIN Profiles P ON U.user_id = P.user_id WHERE U.email = ?");
+        $stmt = $this->db->prepare("SELECT u.user_id, u.email, u.password, u.user_role, p.full_name FROM Users u LEFT JOIN Profiles p ON u.user_id = p.user_id WHERE u.email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
-        $user = $stmt->get_result()->fetch_assoc();
+        
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
         $stmt->close();
+
         return $user ?: null;
     }
 
@@ -20,7 +23,8 @@ class User {
     public function registerUser(string $fullName, string $email, string $password): ?int {
         try {
             $this->db->begin_transaction();
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
             $stmt = $this->db->prepare("INSERT INTO Users (email, password) VALUES (?, ?)");
             $stmt->bind_param("ss", $email, $hashedPassword);
@@ -42,10 +46,11 @@ class User {
     }
 
     // Updates the role of a user
-    public function updateRole(int $userId, string $role): void {
+    public function updateRole(int $userId, string $role): bool {
         $stmt = $this->db->prepare("UPDATE Users SET user_role = ? WHERE user_id = ?");
         $stmt->bind_param("si", $role, $userId);
-        $stmt->execute();
+        $success = $stmt->execute();
         $stmt->close();
+        return $success;
     }
 }

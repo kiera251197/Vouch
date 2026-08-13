@@ -15,27 +15,29 @@ class AuthController {
 
     // Handles user login
     public function login(string $email, string $password): array {
+        $email = trim(filter_var($email, FILTER_SANITIZE_EMAIL));
+
         if (empty($email) || empty($password)) {
-            return ['error' => 'Please fill in both email and password'];
+            return ['error' => 'Please fill in both email and password.'];
         }
 
         $user = $this->userModel->findByEmail($email);
         if ($user && password_verify($password, $user['password'])) {
-            $_SESSION['userId'] = $user['user_id'];
-            $_SESSION['userRole'] = $user['user_role'];
-            $_SESSION['fullName'] = $user['full_name'];
+            // Standardized session variables across the app
+            $_SESSION['user_id']   = $user['user_id'];
+            $_SESSION['userName']  = $user['full_name'] ?? 'User';
+            $_SESSION['email']     = $user['email'];
+            $_SESSION['user_role'] = $user['user_role'];
 
             if (empty($user['user_role'])) {
-                header("Location: setupProfile.php");
-            } elseif ($user['user_role'] === 'single') {
-                header("Location: dashboardSingle.php");
-            } else {
+                header("Location: setupProfiles.php");
+            } elseif ($user['user_role'] === 'matchmaker') {
                 header("Location: dashboardMatchmaker.php");
+            } else {
+                header("Location: dashboardSingle.php");
             }
             exit();
         }
-
-        return ['error' => 'Invalid email or password'];
     }
 
     // Handles user sign up
@@ -62,3 +64,4 @@ class AuthController {
         return ['error' => 'Registration failed. Try again.'];
     }
 }
+
