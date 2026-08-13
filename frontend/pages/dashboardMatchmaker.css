@@ -316,11 +316,11 @@ body {
 
 
 #btnVeto {
-    background: linear-gradient(90deg, var(--sunkissed) 0%, var(--buttercup) 100%);
+    background: linear-gradient(90deg, var(--sunkissed) 0%, var(--dragonfruit) 100%);
 }
 
 #btnVouch {
-    background: linear-gradient(90deg, var(--dragonfruit) 0%, var(--buttercup) 100%);
+    background: linear-gradient(90deg, var(--dragonfruit) 0%, var(--sunkissed) 100%);
 }
     
 .submitBtn {
@@ -341,8 +341,8 @@ body {
 }
 
 .submitBtn:hover {
-    box-shadow: inset 20em 0 0 0 var(--sunkissed), inset -20em 0 0 0 var(--sunkissed);
-    border-color: var(--sunkissed);
+    box-shadow: inset 20em 0 0 0 var(--petal), inset -20em 0 0 0 var(--petal);
+    border-color: var(--petal);
     color: #ffffff;
 }
 
@@ -443,6 +443,52 @@ body {
 .statusInfoWrapper:hover .statusInfo {
     visibility: visible;
     opacity: 1;
+}
+
+/* Top Bar Container */
+.topBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 960px; /* Matches your grid width */
+    margin: 20px auto 10px auto;
+    padding: 0 10px;
+}
+
+.brandLogo img {
+    height: 28px;
+    width: auto;
+    object-fit: contain;
+}
+
+.logoutBtn {
+    position: absolute;
+    top: 232px;
+    right: 32px;
+    z-index: 1000;
+    font-size: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--dove);
+    color: var(--dragonfruit);
+    padding: 8px 18px;
+    border-radius: 20px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+}
+
+.logoutBtn span{
+    font-family: var(--fontPrimary);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.logoutBtn:hover {
+    background: var(--dove);
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 12px rgba(88, 0, 53, 0.476);
 }
 
 /* Responsiveness */

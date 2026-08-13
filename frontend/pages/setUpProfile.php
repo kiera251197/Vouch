@@ -11,6 +11,8 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+$currentUserId = (int)$_SESSION['user_id'];
+
 $controller = new ProfileController();
 $userId = $_SESSION['user_id'];
 $errors = [];
@@ -135,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="Woman">Woman</option>
                     <option value="Trans Woman">Trans Woman</option>
                     <option value="Non-Binary">Non-Binary (Sapphic)</option>
-                    <option value="Lesbian / Queer">Lesbian / Queer</option>
+                    <option value="Queer">Queer</option>
                 </select>
             </div>
 

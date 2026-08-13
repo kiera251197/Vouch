@@ -53,174 +53,179 @@ $vouchHistory = [
     <link rel="stylesheet" href="dashboardSingle.css?v=4">
 </head>
 
-<div class="dashboardBody">
-    
-    <div class="dashboardGrid">
-    
-        <!-- My Profile -->
-        <div class="dashCard" id="myProfileCard">
-            <a href="setupProfile.php" class="editIconBtn" title="Edit my profile"><img src="../assets/images/pinkEditIcon.png" alt="Edit"></a>
-            <div class="profileImg" style="background-color: #DE6993;"></div>
-            <div class="cardLabel">MY PROFILE</div>
-            <div class="cardName"><?= htmlspecialchars($myProfile['name']) ?></div>
-            <div class="cardBio">"<?= htmlspecialchars($myProfile['bio']) ?>"</div>
-        </div>
-    
-
-
-
-
-        <!-- My Matchmaker -->
-        <div class="dashCard" id="myMatchmakerCard">
-            <a href="setUpProfile.php" class="editIconBtn" title="Edit"><img src="../assets/images/orangeEditIcon.png" alt="Edit"></a>
-            <div class="profileImg" style="background-color: #D95205;"></div>
-            <div class="cardLabel cardLabelOrange">MY MATCHMAKER</div>
-            <div class="cardName"><?= htmlspecialchars($myMatchmaker['name']) ?></div>
-            <div class="cardBio">"<?= htmlspecialchars($myMatchmaker['bio']) ?>"</div>
-        </div>
-    
-
-
-
-
-        <!-- Stats & Nudge -->
-        <div class="dashCard" id="statsCard">
-            <div class="statsRow">
-                <div class="statBlock">
-                    <div class="statNumber statNumberOrange" id="pendingVouchCount"><?= $pendingVouchCount ?></div>
-                    <div class="statLabel" style="color: var(--sunkissed);">PENDING VOUCH</div>
-                    <div class="statSub">Waiting on your Matchmaker to review</div>
-                </div>
-                <div class="statBlock">
-                    <div class="statNumber statNumberPink" id="waitingOnThemCount"><?= $waitingOnThemCount ?></div>
-                    <div class="statLabel" style="color: var(--petal);">WAITING ON THEM</div>
-                    <div class="statSub">Waiting on candidate's Matchmaker to review</div>
-                </div>
+<body>
+    <div class="dashboardBody">
+        <a href="logout.php" class="logoutBtn">
+            <img src="../assets/images/logoutIcon.svg" alt="Logout icon">
+            <span>LOG OUT</span>
+        </a>
+        
+        <div class="dashboardGrid">
+        
+            <!-- My Profile -->
+            <div class="dashCard" id="myProfileCard">
+                <a href="setupProfile.php" class="editIconBtn" title="Edit my profile"><img src="../assets/images/pinkEditIcon.png" alt="Edit"></a>
+                <div class="profileImg" style="background-color: #DE6993;"></div>
+                <div class="cardLabel">MY PROFILE</div>
+                <div class="cardName"><?= htmlspecialchars($myProfile['name']) ?></div>
+                <div class="cardBio">"<?= htmlspecialchars($myProfile['bio']) ?>"</div>
             </div>
-            <hr class="statsDivider">
-            <button type="button" class="roleBtn btnMatchmaker" id="nudgeBtn" onclick="nudgeMatchmaker()">
-                <img src="../assets/images/bellIcon.png" alt="Nudge icon" style="width: 16px; height: auto; margin-right: 8px;">
-                NUDGE <?= strtoupper(htmlspecialchars(explode(' ', $myMatchmaker['name'])[0])) ?>
-            </button>
-        </div>
-    
+        
 
 
 
 
-
-        <!-- Most Recent Vouch -->
-        <div class="dashCard" id="mostRecentVouchCard">
-            <div class="cardTitle">MOST RECENT VOUCH</div>
-            <a href="javascript:void(0)" class="browseCandidatesBtn" onclick="openCuratedModal()"><img src="../assets/images/pinkLogo.png" alt="Browse Candidates"></a>
-
-            <div class="recentVouchLayout">
-                <div class="profileLarge" style="background-color: #8E1353"></div>
-                <div class="recentVouchDetails">
-                    <div class="detailRow">
-                        <div class="detailCol">
-                            <div class="detailLabel">NAME</div>
-                            <div class="detailValue"><?= htmlspecialchars($recentVouch['name']) ?></div>
-                        </div>
-                        <div class="detailCol">
-                            <div class="detailLabel">AGE</div>
-                            <div class="detailValue"><?= htmlspecialchars($recentVouch['age']) ?></div>
-                        </div>
-                    </div>
-                    <div class="detailRow">
-                        <div class="detailCol">
-                            <div class="detailLabel">LOCATION</div>
-                            <div class="detailValue"><?= htmlspecialchars($recentVouch['location']) ?></div>
-                        </div>
-                        <div class="detailCol">
-                            <div class="detailLabel">GENDER</div>
-                            <div class="detailValue"><?= htmlspecialchars($recentVouch['gender']) ?></div>
-                        </div>
-                    </div>
-                    <div class="detailRow">
-                        <div class="detailCol">
-                            <div class="detailLabel">OCCUPATION</div>
-                            <div class="detailValue"><?= htmlspecialchars($recentVouch['occupation']) ?></div>
-                        </div>
-                        <div class="detailCol">
-                            <div class="detailLabel">HOBBIES</div>
-                            <div class="detailValue"><?= htmlspecialchars($recentVouch['hobbies']) ?></div>
-                        </div>
-                    </div>
-
-                    <div class="matchmakerNoteLabel"><?= strtoupper(htmlspecialchars(explode(' ', $myMatchmaker['name'])[0])) ?> SAYS...</div>
-                    <div class="detailValue"><?= htmlspecialchars($recentVouch['note']) ?></div>
-                </div>
+            <!-- My Matchmaker -->
+            <div class="dashCard" id="myMatchmakerCard">
+                <a href="setUpProfile.php" class="editIconBtn" title="Edit"><img src="../assets/images/orangeEditIcon.png" alt="Edit"></a>
+                <div class="profileImg" style="background-color: #D95205;"></div>
+                <div class="cardLabel cardLabelOrange">MY MATCHMAKER</div>
+                <div class="cardName"><?= htmlspecialchars($myMatchmaker['name']) ?></div>
+                <div class="cardBio">"<?= htmlspecialchars($myMatchmaker['bio']) ?>"</div>
             </div>
+        
 
-            <div class="actionBtnGroup">
-                <button type="button" class="submitBtn" id="messageBtn" onclick="messageCandidate()">
-                    <img src="../assets/images/messageIcon.png" alt="Message icon" style="width: 16px; height: auto; margin-right: 8px;">
-                    MESSAGE <?= strtoupper(htmlspecialchars(explode(' ', $recentVouch['name'])[0])) ?>
+
+
+
+            <!-- Stats & Nudge -->
+            <div class="dashCard" id="statsCard">
+                <div class="statsRow">
+                    <div class="statBlock">
+                        <div class="statNumber statNumberOrange" id="pendingVouchCount"><?= $pendingVouchCount ?></div>
+                        <div class="statLabel" style="color: var(--sunkissed);">PENDING VOUCH</div>
+                        <div class="statSub">Waiting on your Matchmaker to review</div>
+                    </div>
+                    <div class="statBlock">
+                        <div class="statNumber statNumberPink" id="waitingOnThemCount"><?= $waitingOnThemCount ?></div>
+                        <div class="statLabel" style="color: var(--petal);">WAITING ON THEM</div>
+                        <div class="statSub">Waiting on candidate's Matchmaker to review</div>
+                    </div>
+                </div>
+                <hr class="statsDivider">
+                <button type="button" class="roleBtn btnMatchmaker" id="nudgeBtn" onclick="nudgeMatchmaker()">
+                    <img src="../assets/images/bellIcon.png" alt="Nudge icon" style="width: 16px; height: auto; margin-right: 8px;">
+                    NUDGE <?= strtoupper(htmlspecialchars(explode(' ', $myMatchmaker['name'])[0])) ?>
                 </button>
             </div>
-        </div>
-    
+        
 
 
 
 
-        <!-- Vouch History -->
-        <div class="dashCard" id="vouchHistoryCard">
-            <div class="cardTitle">VOUCH HISTORY</div>
-    
-            <table class="vouchHistoryTable">
-                <thead>
-                    <tr>
-                        <th>NAME</th>
-                        <th>AGE</th>
-                        <th>DATE</th>
-                        <th>STATUS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($vouchHistory as $row): ?>
+
+            <!-- Most Recent Vouch -->
+            <div class="dashCard" id="mostRecentVouchCard">
+                <div class="cardTitle">MOST RECENT VOUCH</div>
+                <a href="javascript:void(0)" class="browseCandidatesBtn" onclick="openCuratedModal()"><img src="../assets/images/pinkLogo.png" alt="Browse Candidates"></a>
+
+                <div class="recentVouchLayout">
+                    <div class="profileLarge" style="background-color: #8E1353"></div>
+                    <div class="recentVouchDetails">
+                        <div class="detailRow">
+                            <div class="detailCol">
+                                <div class="detailLabel">NAME</div>
+                                <div class="detailValue"><?= htmlspecialchars($recentVouch['name']) ?></div>
+                            </div>
+                            <div class="detailCol">
+                                <div class="detailLabel">AGE</div>
+                                <div class="detailValue"><?= htmlspecialchars($recentVouch['age']) ?></div>
+                            </div>
+                        </div>
+                        <div class="detailRow">
+                            <div class="detailCol">
+                                <div class="detailLabel">LOCATION</div>
+                                <div class="detailValue"><?= htmlspecialchars($recentVouch['location']) ?></div>
+                            </div>
+                            <div class="detailCol">
+                                <div class="detailLabel">GENDER</div>
+                                <div class="detailValue"><?= htmlspecialchars($recentVouch['gender']) ?></div>
+                            </div>
+                        </div>
+                        <div class="detailRow">
+                            <div class="detailCol">
+                                <div class="detailLabel">OCCUPATION</div>
+                                <div class="detailValue"><?= htmlspecialchars($recentVouch['occupation']) ?></div>
+                            </div>
+                            <div class="detailCol">
+                                <div class="detailLabel">HOBBIES</div>
+                                <div class="detailValue"><?= htmlspecialchars($recentVouch['hobbies']) ?></div>
+                            </div>
+                        </div>
+
+                        <div class="matchmakerNoteLabel"><?= strtoupper(htmlspecialchars(explode(' ', $myMatchmaker['name'])[0])) ?> SAYS...</div>
+                        <div class="detailValue"><?= htmlspecialchars($recentVouch['note']) ?></div>
+                    </div>
+                </div>
+
+                <div class="actionBtnGroup">
+                    <button type="button" class="submitBtn" id="messageBtn" onclick="messageCandidate()">
+                        <img src="../assets/images/messageIcon.png" alt="Message icon" style="width: 16px; height: auto; margin-right: 8px;">
+                        MESSAGE <?= strtoupper(htmlspecialchars(explode(' ', $recentVouch['name'])[0])) ?>
+                    </button>
+                </div>
+            </div>
+        
+
+
+
+
+            <!-- Vouch History -->
+            <div class="dashCard" id="vouchHistoryCard">
+                <div class="cardTitle">VOUCH HISTORY</div>
+        
+                <table class="vouchHistoryTable">
+                    <thead>
                         <tr>
-                            <td class="historyNameCell">
-                                <span class="profileSmall" style="background-color: #F28806;"></span>
-                                <?= htmlspecialchars($row['name']) ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars($row['age']) ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars($row['date']) ?>
-                            </td>
-
-                            <td class="statusCell">
-                                <div class="statusInfoWrapper">
-                                    <span class="statusTag status<?= htmlspecialchars($row['status']) ?>">
-                                        <?= htmlspecialchars($row['status']) ?>
-                                    </span>
-                                    <div class="statusInfo">
-                                        <strong style="font-weight: 600;">SOPHIA SAYS:</strong> "<?= htmlspecialchars($row['note']) ?>"
-                                    </div>
-                                </div>
-                            </td>
+                            <th>NAME</th>
+                            <th>AGE</th>
+                            <th>DATE</th>
+                            <th>STATUS</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($vouchHistory as $row): ?>
+                            <tr>
+                                <td class="historyNameCell">
+                                    <span class="profileSmall" style="background-color: #F28806;"></span>
+                                    <?= htmlspecialchars($row['name']) ?>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($row['age']) ?>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($row['date']) ?>
+                                </td>
+
+                                <td class="statusCell">
+                                    <div class="statusInfoWrapper">
+                                        <span class="statusTag status<?= htmlspecialchars($row['status']) ?>">
+                                            <?= htmlspecialchars($row['status']) ?>
+                                        </span>
+                                        <div class="statusInfo">
+                                            <strong style="font-weight: 600;">SOPHIA SAYS:</strong> "<?= htmlspecialchars($row['note']) ?>"
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
- 
-<script>
-    function nudgeMatchmaker() {
-        alert("Nudge sent!");
-    }
- 
-    function messageCandidate() {
-        alert("Opening chat...");
-    }
-</script>
+    
+    <script>
+        function nudgeMatchmaker() {
+            alert("Nudge sent!");
+        }
+    
+        function messageCandidate() {
+            alert("Opening chat...");
+        }
+    </script>
 
 <?php include 'browseCandidatesModalSingle.php'; ?>
 </body>

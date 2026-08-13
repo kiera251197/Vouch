@@ -413,7 +413,6 @@ body {
     transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
-/* Tooltip arrow */
 .statusInfo::after {
     content: "";
     position: absolute;
@@ -427,6 +426,36 @@ body {
 .statusInfoWrapper:hover .statusInfo {
     visibility: visible;
     opacity: 1;
+}
+
+.logoutBtn {
+    position: absolute;
+    top: 232px;
+    right: 32px;
+    z-index: 1000;
+    font-size: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--dove);
+    color: var(--dragonfruit);
+    padding: 8px 18px;
+    border-radius: 20px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+}
+
+.logoutBtn span{
+    font-family: var(--fontPrimary);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.logoutBtn:hover {
+    background: var(--dove);
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 12px rgba(88, 0, 53, 0.476);
 }
 
 /* Responsiveness */

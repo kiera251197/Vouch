@@ -195,16 +195,20 @@ small {
     transition: all 0.5s ease-in-out;
 }
 
-.roleBtn:hover { 
+.roleBtn.btnSingle:hover { 
     box-shadow: inset 20em 0 0 0 var(--petal), inset -20em 0 0 0 var(--petal);
 }
 
+.roleBtn.btnMatchmaker:hover { 
+    box-shadow: inset 20em 0 0 0 var(--citrus), inset -20em 0 0 0 var(--citrus);
+}
+
 .btnSingle {
-    background: linear-gradient(90deg, var(--dragonfruit) 0%, var(--buttercup) 100%);
+    background: linear-gradient(90deg, var(--dragonfruit) 0%, var(--sunkissed) 100%);
 }
 
 .btnMatchmaker {
-    background: linear-gradient(90deg, var(--sunkissed) 0%, var(--buttercup) 100%);
+    background: linear-gradient(90deg, var(--sunkissed) 0%, var(--dragonfruit) 100%);
 }
 
 .field { 

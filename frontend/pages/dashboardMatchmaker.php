@@ -52,185 +52,190 @@ $vouchHistory = [
     <link rel="stylesheet" href="dashboardMatchmaker.css?v=3">
 </head>
 
-<div class="dashboardBody">
-    
-    <div class="dashboardGrid">
-    
-        <!-- My Single -->
-        <div class="dashCard" id="mySingleCard">
-            <a href="setupProfile.php" class="editIconBtn" title="Edit Single Profile"><img src="../assets/images/pinkEditIcon.png" alt="Edit"></a>
-            <div class="profileImg" style="background-color: #DE6993;"></div>
-            <div class="cardLabel">MY SINGLE</div>
-            <div class="cardName"><?= htmlspecialchars($mySingle['name']) ?></div>
-            <div class="cardBio">"<?= htmlspecialchars($mySingle['bio']) ?>"</div>
-        </div>
-    
+<body>
+    <div class="dashboardBody">
+        <a href="logout.php" class="logoutBtn">
+            <img src="../assets/images/logoutIcon.svg" alt="Logout icon">
+            <span>LOG OUT</span>
+        </a>
+        
+        <div class="dashboardGrid">
+        
+            <!-- My Single -->
+            <div class="dashCard" id="mySingleCard">
+                <a href="setupProfile.php" class="editIconBtn" title="Edit Single Profile"><img src="../assets/images/pinkEditIcon.png" alt="Edit"></a>
+                <div class="profileImg" style="background-color: #DE6993;"></div>
+                <div class="cardLabel">MY SINGLE</div>
+                <div class="cardName"><?= htmlspecialchars($mySingle['name']) ?></div>
+                <div class="cardBio">"<?= htmlspecialchars($mySingle['bio']) ?>"</div>
+            </div>
+        
 
 
 
 
-        <!-- My Profile (Matchmaker side badabing) -->
-        <div class="dashCard" id="myProfileCard">
-            <a href="setUpProfile.php" class="editIconBtn" title="Edit Profile"><img src="../assets/images/orangeEditIcon.png" alt="Edit"></a>
-            <div class="profileImg" style="background-color: #D95205;"></div>
-            <div class="cardLabel cardLabelOrange">MY PROFILE</div>
-            <div class="cardName"><?= htmlspecialchars($myProfile['name']) ?></div>
-            <div class="cardBio">"<?= htmlspecialchars($myProfile['bio']) ?>"</div>
-        </div>
+            <!-- My Profile (Matchmaker side badabing) -->
+            <div class="dashCard" id="myProfileCard">
+                <a href="setUpProfile.php" class="editIconBtn" title="Edit Profile"><img src="../assets/images/orangeEditIcon.png" alt="Edit"></a>
+                <div class="profileImg" style="background-color: #D95205;"></div>
+                <div class="cardLabel cardLabelOrange">MY PROFILE</div>
+                <div class="cardName"><?= htmlspecialchars($myProfile['name']) ?></div>
+                <div class="cardBio">"<?= htmlspecialchars($myProfile['bio']) ?>"</div>
+            </div>
 
 
 
 
-    
-        <!-- Stats & Ping -->
-        <div class="dashCard" id="statsCard">
-            <div class="statsRow">
-                <div class="statBlock">
-                    <div class="statNumber statNumberOrange" id="awaitingVouchCount"><?= $awaitingVouchCount ?></div>
-                    <div class="statLabel" style="color: var(--sunkissed);">AWAITING VOUCH</div>
-                    <div class="statSub">Profiles waiting for you to review</div>
+        
+            <!-- Stats & Ping -->
+            <div class="dashCard" id="statsCard">
+                <div class="statsRow">
+                    <div class="statBlock">
+                        <div class="statNumber statNumberOrange" id="awaitingVouchCount"><?= $awaitingVouchCount ?></div>
+                        <div class="statLabel" style="color: var(--sunkissed);">AWAITING VOUCH</div>
+                        <div class="statSub">Profiles waiting for you to review</div>
+                    </div>
+                    <div class="statBlock">
+                        <div class="statNumber statNumberPink" id="totalVetosCount"><?= $totalVetosCount ?></div>
+                        <div class="statLabel" style="color: var(--petal);">TOTAL VETOS</div>
+                        <div class="statSub">Candidates that didn't quite meet the criteria</div>
+                    </div>
                 </div>
-                <div class="statBlock">
-                    <div class="statNumber statNumberPink" id="totalVetosCount"><?= $totalVetosCount ?></div>
-                    <div class="statLabel" style="color: var(--petal);">TOTAL VETOS</div>
-                    <div class="statSub">Candidates that didn't quite meet the criteria</div>
+                <hr class="statsDivider">
+                <button type="button" class="roleBtn btnMatchmaker" id="pingBtn" onclick="pingSingle()">
+                    <img src="../assets/images/bellIcon.png" alt="Ping icon" style="width: 16px; height: auto; margin-right: 8px;">
+                    PING <?= strtoupper(htmlspecialchars(explode(' ', $mySingle['name'])[0])) ?>
+                </button>
+            </div>
+
+
+
+
+        
+            <!-- Current Candidate Profile -->
+            <div class="dashCard" id="candidateCard">
+            <div class="cardHeaderRow">
+                <div class="cardTitle">CURRENT CANDIDATE PROFILE</div>
+                <a href="javascript:void(0)" class="browseCandidatesBtn" onclick="openCandidateModal()"><img src="../assets/images/pinkLogo.png" alt="View Candidate"></a>
+            </div>
+
+            <div class="recentVouchLayout">
+                <div class="profileLarge" style="background-color: #8E1353"></div>
+
+                <div class="recentVouchDetails">
+                    <div class="detailRow">
+                        <div class="detailCol">
+                            <div class="detailLabel">NAME</div>
+                            <div class="detailValue"><?= htmlspecialchars($currentCandidate['name']) ?></div>
+                        </div>
+                        <div class="detailCol">
+                            <div class="detailLabel">AGE</div>
+                            <div class="detailValue"><?= htmlspecialchars($currentCandidate['age']) ?></div>
+                        </div>
+                    </div>
+                    <div class="detailRow">
+                        <div class="detailCol">
+                            <div class="detailLabel">LOCATION</div>
+                            <div class="detailValue"><?= htmlspecialchars($currentCandidate['location']) ?></div>
+                        </div>
+                        <div class="detailCol">
+                            <div class="detailLabel">GENDER</div>
+                            <div class="detailValue"><?= htmlspecialchars($currentCandidate['gender']) ?></div>
+                        </div>
+                    </div>
+                    <div class="detailRow">
+                        <div class="detailCol">
+                            <div class="detailLabel">OCCUPATION</div>
+                            <div class="detailValue"><?= htmlspecialchars($currentCandidate['occupation']) ?></div>
+                        </div>
+                        <div class="detailCol">
+                            <div class="detailLabel">HOBBIES</div>
+                            <div class="detailValue"><?= htmlspecialchars($currentCandidate['hobbies']) ?></div>
+                        </div>
+                    </div>
+
+                    <div class="matchmakerNoteLabel">MESSAGE TO <?= strtoupper(htmlspecialchars(explode(' ', $mySingle['name'])[0])) ?></div>
+                    <input type="text" class="matchmakerInput" placeholder="Leave a message for <?= strtoupper(htmlspecialchars(explode(' ', $mySingle['name'])[0])) ?>..." id="matchmakerNoteInput">
                 </div>
             </div>
-            <hr class="statsDivider">
-            <button type="button" class="roleBtn btnMatchmaker" id="pingBtn" onclick="pingSingle()">
-                <img src="../assets/images/bellIcon.png" alt="Ping icon" style="width: 16px; height: auto; margin-right: 8px;">
-                PING <?= strtoupper(htmlspecialchars(explode(' ', $mySingle['name'])[0])) ?>
-            </button>
-        </div>
 
-
-
-
-    
-        <!-- Current Candidate Profile -->
-        <div class="dashCard" id="candidateCard">
-        <div class="cardHeaderRow">
-            <div class="cardTitle">CURRENT CANDIDATE PROFILE</div>
-            <a href="javascript:void(0)" class="browseCandidatesBtn" onclick="openCandidateModal()"><img src="../assets/images/pinkLogo.png" alt="View Candidate"></a>
-        </div>
-
-        <div class="recentVouchLayout">
-            <div class="profileLarge" style="background-color: #8E1353"></div>
-
-            <div class="recentVouchDetails">
-                <div class="detailRow">
-                    <div class="detailCol">
-                        <div class="detailLabel">NAME</div>
-                        <div class="detailValue"><?= htmlspecialchars($currentCandidate['name']) ?></div>
-                    </div>
-                    <div class="detailCol">
-                        <div class="detailLabel">AGE</div>
-                        <div class="detailValue"><?= htmlspecialchars($currentCandidate['age']) ?></div>
-                    </div>
-                </div>
-                <div class="detailRow">
-                    <div class="detailCol">
-                        <div class="detailLabel">LOCATION</div>
-                        <div class="detailValue"><?= htmlspecialchars($currentCandidate['location']) ?></div>
-                    </div>
-                    <div class="detailCol">
-                        <div class="detailLabel">GENDER</div>
-                        <div class="detailValue"><?= htmlspecialchars($currentCandidate['gender']) ?></div>
-                    </div>
-                </div>
-                <div class="detailRow">
-                    <div class="detailCol">
-                        <div class="detailLabel">OCCUPATION</div>
-                        <div class="detailValue"><?= htmlspecialchars($currentCandidate['occupation']) ?></div>
-                    </div>
-                    <div class="detailCol">
-                        <div class="detailLabel">HOBBIES</div>
-                        <div class="detailValue"><?= htmlspecialchars($currentCandidate['hobbies']) ?></div>
-                    </div>
-                </div>
-
-                <div class="matchmakerNoteLabel">MESSAGE TO <?= strtoupper(htmlspecialchars(explode(' ', $mySingle['name'])[0])) ?></div>
-                <input type="text" class="matchmakerInput" placeholder="Leave a message for <?= strtoupper(htmlspecialchars(explode(' ', $mySingle['name'])[0])) ?>..." id="matchmakerNoteInput">
+            <div class="actionBtnGroup">
+                <button type="button" class="submitBtn" id="btnVeto" onclick="vetoCandidate()">
+                    <img src="../assets/images/xIcon.png" alt="X icon" style="width: 14px; height: auto; margin-right: 8px;"> 
+                    VETO
+                </button>
+                
+                <button type="button" class="submitBtn" id="btnVouch" onclick="vouchCandidate()">
+                    <img src="../assets/images/tickIcon.png" alt="Tick icon" style="width: 16px; height: auto; margin-right: 8px;"> 
+                    VOUCH
+                </button>
             </div>
         </div>
-
-        <div class="actionBtnGroup">
-            <button type="button" class="submitBtn" id="btnVeto" onclick="vetoCandidate()">
-                <img src="../assets/images/xIcon.png" alt="X icon" style="width: 14px; height: auto; margin-right: 8px;"> 
-                VETO
-            </button>
-            
-            <button type="button" class="submitBtn" id="btnVouch" onclick="vouchCandidate()">
-                <img src="../assets/images/tickIcon.png" alt="Tick icon" style="width: 16px; height: auto; margin-right: 8px;"> 
-                VOUCH
-            </button>
-        </div>
-    </div>
-    
+        
 
 
 
-    
-        <!-- Vouch History -->
-        <div class="dashCard" id="vouchHistoryCard">
-            <div class="cardTitle">VOUCH HISTORY</div>
+        
+            <!-- Vouch History -->
+            <div class="dashCard" id="vouchHistoryCard">
+                <div class="cardTitle">VOUCH HISTORY</div>
 
-            <table class="vouchHistoryTable">
-                <thead>
-                    <tr>
-                        <th>NAME</th>
-                        <th>AGE</th>
-                        <th>DATE</th>
-                        <th>STATUS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($vouchHistory as $row): ?>
+                <table class="vouchHistoryTable">
+                    <thead>
                         <tr>
-                            <td class="historyNameCell">
-                                <span class="profileSmall" style="background-color: #F28806;"></span>
-                                <?= htmlspecialchars($row['name']) ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars($row['age']) ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars($row['date']) ?>
-                            </td>
-
-                            <td class="statusCell">
-                                <div class="statusInfoWrapper">
-                                    <span class="statusTag status<?= htmlspecialchars($row['status']) ?>">
-                                        <?= htmlspecialchars($row['status']) ?>
-                                    </span>
-                                    <div class="statusInfo">
-                                        <strong style="font-weight: 600;">SOPHIA SAYS:</strong> "<?= htmlspecialchars($row['note']) ?>"
-                                    </div>
-                                </div>
-                            </td>
+                            <th>NAME</th>
+                            <th>AGE</th>
+                            <th>DATE</th>
+                            <th>STATUS</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($vouchHistory as $row): ?>
+                            <tr>
+                                <td class="historyNameCell">
+                                    <span class="profileSmall" style="background-color: #F28806;"></span>
+                                    <?= htmlspecialchars($row['name']) ?>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($row['age']) ?>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($row['date']) ?>
+                                </td>
+
+                                <td class="statusCell">
+                                    <div class="statusInfoWrapper">
+                                        <span class="statusTag status<?= htmlspecialchars($row['status']) ?>">
+                                            <?= htmlspecialchars($row['status']) ?>
+                                        </span>
+                                        <div class="statusInfo">
+                                            <strong style="font-weight: 600;">SOPHIA SAYS:</strong> "<?= htmlspecialchars($row['note']) ?>"
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
- 
-<script>
-    function pingSingle() {
-        alert("Ping sent to Jane!");
-    }
- 
-    function vetoCandidate() {
-        alert("Candidate Vetoed.");
-    }
+    
+    <script>
+        function pingSingle() {
+            alert("Ping sent to Jane!");
+        }
+    
+        function vetoCandidate() {
+            alert("Candidate Vetoed.");
+        }
 
-    function vouchCandidate() {
-        alert("Candidate Vouched!");
-    }
-</script>
+        function vouchCandidate() {
+            alert("Candidate Vouched!");
+        }
+    </script>
 
 <?php include 'browseCandidatesModal.php'; ?>
 </body>

@@ -55,13 +55,16 @@ class AuthController {
 
         $newUserId = $this->userModel->registerUser($fullName, $email, $password);
         if ($newUserId) {
-            $_SESSION['userId'] = $newUserId;
-            $_SESSION['fullName'] = $fullName;
+            $_SESSION['user_id']   = $newUserId;
+            $_SESSION['userName']  = $fullName;
+            $_SESSION['email']     = $email;
+            $_SESSION['user_role'] = null; 
             header("Location: setupProfile.php");
             exit();
         }
 
         return ['error' => 'Registration failed. Try again.'];
     }
+   
 }
 

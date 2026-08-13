@@ -35,23 +35,26 @@ class AccountLinking {
     }
 
     // Claims a code for a Matchmaker user
-    public function claimCode(int $matchmakerId, string $code): bool {
-        $stmt = $this->db->prepare("SELECT link_id FROM Account_Linking WHERE link_code = ? AND matchmaker_user_id IS NULL");
-        $stmt->bind_param("s", $code);
-        $stmt->execute();
-        $link = $stmt->get_result()->fetch_assoc();
-        $stmt->close();
+    public function claimCode(int $matchmakerUserId, string $code): bool {
+    $stmt = $this->db->prepare("SELECT single_user_id FROM Account_Linking WHERE link_code = ?");
+    $stmt->bind_param("s", $code);
+    $stmt->execute();
+    
+    $stmt->bind_result($singleUserId);
+    $found = $stmt->fetch();
+    $stmt->close();
 
-        if (!$res || $res['single_user_id'] == $matchmakerUserId) {
-            return false;
-        }
-
-        $claim = $this->db->prepare("UPDATE Account_Linking SET matchmaker_user_id = ? WHERE link_id = ?");
-        $claim->bind_param("ii", $matchmakerId, $link['link_id']);
-        $claim->execute();
-        $claim->close();
-
-        return true;
+    if (!$found || $singleUserId == $matchmakerUserId) {
+        return false;
     }
+
+    // 2. Link the Matchmaker to this Single
+    $stmt = $this->db->prepare("UPDATE Account_Linking SET matchmaker_user_id = ? WHERE link_code = ?");
+    $stmt->bind_param("is", $matchmakerUserId, $code);
+    $success = $stmt->execute();
+    $stmt->close();
+
+    return $success;
+}
 
 }
