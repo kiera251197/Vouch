@@ -18,6 +18,14 @@ class Profile {
 
     // Updates the profile information for a Single user
     public function updateSingleProfile(int $userId, array $data, ?string $photoPath): void {
+        $birthYear  = $data['birthYear'] ?? null;
+        $gender     = $data['gender'] ?? '';
+        $location   = $data['location'] ?? '';
+        $occupation = $data['occupation'] ?? '';
+        $hobbies    = $data['hobbies'] ?? '';
+        $bio        = $data['bio'] ?? '';
+        $hook       = $data['hook'] ?? '';
+
         if ($photoPath) {
             $stmt = $this->db->prepare("UPDATE Profiles SET birth_year=?, gender=?, location=?, occupation=?, hobbies=?, bio=?, hook=?, picture_url=? WHERE user_id=?");
             $stmt->bind_param("isssssssi", $data['birthYear'], $data['gender'], $data['location'], $data['occupation'], $data['hobbies'], $data['bio'], $data['hook'], $photoPath, $userId);
@@ -31,6 +39,9 @@ class Profile {
 
     // Updates the profile information for a Matchmaker user
     public function updateMatchmakerProfile(int $userId, array $data, ?string $photoPath): void {
+        $relationship = $data['relationship'] ?? '';
+        $credentials  = $data['credentials'] ?? '';
+        
         if ($photoPath) {
             $stmt = $this->db->prepare("UPDATE Profiles SET relationship_to_single=?, credentials=?, picture_url=? WHERE user_id=?");
             $stmt->bind_param("sssi", $data['relationship'], $data['credentials'], $photoPath, $userId);

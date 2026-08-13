@@ -42,7 +42,9 @@ class AccountLinking {
         $link = $stmt->get_result()->fetch_assoc();
         $stmt->close();
 
-        if (!$link) return false;
+        if (!$res || $res['single_user_id'] == $matchmakerUserId) {
+            return false;
+        }
 
         $claim = $this->db->prepare("UPDATE Account_Linking SET matchmaker_user_id = ? WHERE link_id = ?");
         $claim->bind_param("ii", $matchmakerId, $link['link_id']);

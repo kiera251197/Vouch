@@ -4,21 +4,46 @@ error_reporting(E_ALL);
 
 session_start();
 
+require_once __DIR__ . '/../../backend/controller/profileController.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+
+$controller = new ProfileController();
+$userId = $_SESSION['user_id'];
 $errors = [];
 $activeStep = 'step1';
 
-$displayName = $_SESSION['userName'] ?? 'Sophia Walker';
-$generatedCode = '6 7 9 1 1'; 
+$displayName = $controller->profileModel->getDisplayName($userId);
 
+// Gets a code for the Single 
+$generatedCode = $controller->linkingModel->ensureCode($userId);
+
+// Handle POST submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $role = $_POST['userRole'] ?? 'single';
+    $role = $_POST['userRole'] ?? '';
 
-    if ($role === 'matchmaker') {
-        header("Location: dashboardMatchmaker.php");
+    // AJAX Handler for regenerate code
+    if (isset($_POST['action']) && $_POST['action'] === 'regenerateCode') {
+        $newCode = $controller->linkingModel->generateNewCode($userId);
+        echo json_encode(['code' => $newCode]);
         exit();
-    } else {
-        header("Location: dashboardSingle.php");
-        exit();
+    }
+
+    if ($role === 'single') {
+        $result = $controller->processSingleSetup($userId, $_POST, $_FILES);
+        if (isset($result['error'])) {
+            $errors[] = $result['error'];
+            $activeStep = $result['step'] ?? 'sStep2';
+        }
+    } elseif ($role === 'matchmaker') {
+        $result = $controller->processMatchmakerSetup($userId, $_POST, $_FILES);
+        if (isset($result['error'])) {
+            $errors[] = $result['error'];
+            $activeStep = $result['step'] ?? 'mStep2';
+        }
     }
 }
 ?>
@@ -106,11 +131,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
 
                 <select name="gender" class="fieldHalf">
-                    <option value="" disabled selected>Gender</option>
-                    <option value="Female">Female</option>
-                    <option value="Male">Male</option>
-                    <option value="Transgender">Transgender</option>
-                    <option value="Non-Binary">Non-Binary</option>
+                    <option value="" disabled selected>Gender / Identity</option>
+                    <option value="Woman">Woman</option>
+                    <option value="Trans Woman">Trans Woman</option>
+                    <option value="Non-Binary">Non-Binary (Sapphic)</option>
+                    <option value="Lesbian / Queer">Lesbian / Queer</option>
                 </select>
             </div>
 
@@ -122,21 +147,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="field">
                 <select name="hobbies">
-                    <option value="" disabled selected>Choose Your Hobby</option>
-                    <option value="sports">Sports</option>
-                    <option value="art">Art</option>
+                    <option value="" disabled selected>Choose Your Primary Hobby</option>
+                    <option value="art">Art & Creative</option>
+                    <option value="thrifting">Thrifting & Vintage</option>
+                    <option value="plants">Plants & Gardening</option>
+                    <option value="outdoors">Hiking & Camping</option>
+                    <option value="reading">Reading & Bookstores</option>
+                    <option value="music">Music & Concerts</option>
                     <option value="travel">Travel</option>
-                    <option value="music">Music</option>
+                    <option value="fitness">Fitness & Sports</option>
+                    <option value="cooking">Cooking & Baking</option>
                     <option value="gaming">Gaming</option>
-                    <option value="fitness">Fitness</option>
-                    <option value="movies">Movies</option>
-                    <option value="reading">Reading</option>
-                    <option value="cooking">Cooking</option>
-                    <option value="technology">Technology</option>
-                    <option value="fashion">Fashion</option>
-                    <option value="photography">Photography</option>
-                    <option value="outdoors">Hiking</option>
-                    <option value="other">Other</option>
+                    <option value="coffee">Coffee & Cafe Hopping</option>
                 </select>
             </div>
 
@@ -175,23 +197,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="56+">56+</option>
                 </select>
                 <select name="targetGender" class="fieldHalf">
-                    <option value="" disabled selected>Gender</option>
-                    <option value="Men">Men</option>
+                    <option value="" disabled selected>Interested In</option>
                     <option value="Women">Women</option>
-                    <option value="Everyone">Everyone</option>
+                    <option value="Trans Women">Trans Women</option>
+                    <option value="Non-Binary Sapphics">Non-Binary Sapphics</option>
+                    <option value="All Sapphics">All Sapphic Women</option>
                 </select>
             </div>
 
             <h3>THE HOOK</h3>
-            <small>What are you looking for in a partner...</small>
+            <small>What attracts you in a potential partner?</small>
             <div class="field">
-                <input type="text" name="hook" placeholder="Tall, funny and a finance bro">
+                <input type="text" name="hook" placeholder="Loves coffee dates, thrifting and spontaneous road trips">
             </div>
 
             <h3>MY BIO</h3>
             <small>This will be displayed to potential matches</small>
             <div class="field">
-                <input type="text" name="bio" placeholder="Looking for someone to share fries with">
+                <input type="text" name="bio" placeholder="Looking for someone to swap vinyl records with">
             </div>
 
             <div class="navActions">

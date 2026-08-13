@@ -30,7 +30,7 @@ class AuthController {
             $_SESSION['user_role'] = $user['user_role'];
 
             if (empty($user['user_role'])) {
-                header("Location: setupProfiles.php");
+                header("Location: setupProfile.php");
             } elseif ($user['user_role'] === 'matchmaker') {
                 header("Location: dashboardMatchmaker.php");
             } else {

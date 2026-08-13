@@ -9,6 +9,9 @@ class ProfileController {
     public AccountLinking $linkingModel;
     public User $userModel;
 
+    private string $cloudName = 'pssabnrs';
+    private string $uploadPreset = 'VouchUploads';
+
     public function __construct() {
         $db = Database::getConnection();
         $this->profileModel = new Profile($db);
@@ -38,6 +41,7 @@ class ProfileController {
         $this->profileModel->updatePreferences($userId, $targetGender, $targetAges);
         $this->handleGalleryUploads($userId, $files['galleryPhotos'] ?? null);
 
+        $_SESSION['user_role'] = 'single';
         header("Location: dashboardSingle.php");
         exit();
     }
@@ -63,27 +67,49 @@ class ProfileController {
         $this->userModel->updateRole($userId, 'matchmaker');
         $this->profileModel->updateMatchmakerProfile($userId, $postData, $photoPath);
 
+        $_SESSION['user_role'] = 'matchmaker';
         header("Location: dashboardMatchmaker.php");
         exit();
     }
 
-    // Handles file uploads for their profile photos
+    // Cloudinary upload for profile photos
+    private function uploadToCloudinary(string $tmpPath, string $folder): ?string {
+        $apiUrl = "https://api.cloudinary.com/v1_1/{$this->cloudName}/image/upload";
+
+        $postData = [
+            'file'          => new CURLFile($tmpPath),
+            'upload_preset' => $this->uploadPreset,
+            'folder'        => 'vouch/' . $folder
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $apiUrl);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        if (!$response) return null;
+
+        $json = json_decode($response, true);
+        
+        // Returns the secure HTTPS Cloudinary image URL
+        return $json['secure_url'] ?? null;
+    }
+
+    // Handles single file upload to Cloudinary
     private function uploadFile(?array $file, int $userId, string $folder): ?string {
         if (!$file || empty($file['name']) || $file['error'] !== UPLOAD_ERR_OK) return null;
 
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) return null;
 
-        $destDir = __DIR__ . '/../../frontend/pages/uploads/' . $folder . '/';
-        if (!is_dir($destDir)) mkdir($destDir, 0755, true);
-
-        $filename = $userId . '_' . time() . '.' . $ext;
-        move_uploaded_file($file['tmp_name'], $destDir . $filename);
-
-        return 'uploads/' . $folder . '/' . $filename;
+        return $this->uploadToCloudinary($file['tmp_name'], $folder);
     }
 
-    // Handles multiple gallery photo uploads for the Single users
+    // Handles multiple gallery uploads to Cloudinary
     private function handleGalleryUploads(int $userId, ?array $files): void {
         if (!$files || empty($files['name'][0])) return;
         $count = min(count($files['name']), 5);
@@ -93,13 +119,10 @@ class ProfileController {
             $ext = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
             if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) continue;
 
-            $destDir = __DIR__ . '/../../frontend/pages/uploads/gallery/';
-            if (!is_dir($destDir)) mkdir($destDir, 0755, true);
-
-            $filename = $userId . '_' . time() . '_' . $i . '.' . $ext;
-            move_uploaded_file($files['tmp_name'][$i], $destDir . $filename);
-
-            $this->profileModel->addGalleryPhoto($userId, 'uploads/gallery/' . $filename);
+            $photoUrl = $this->uploadToCloudinary($files['tmp_name'][$i], 'gallery');
+            if ($photoUrl) {
+                $this->profileModel->addGalleryPhoto($userId, $photoUrl);
+            }
         }
     }
 }
