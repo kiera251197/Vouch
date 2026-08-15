@@ -1,37 +1,93 @@
 <?php
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
- 
+
+session_start();
+
+require_once __DIR__ . '/../../backend/config/database.php';
+require_once __DIR__ . '/../../backend/models/user.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+
+$db = Database::getConnection();
+$currentUserId = (int)$_SESSION['user_id'];
+
+// Single Profile
+$pStmt = $db->prepare("SELECT full_name, bio, picture_url FROM Profiles WHERE user_id = ?");
+$pStmt->bind_param("i", $currentUserId);
+$pStmt->execute();
+$myProfileData = $pStmt->get_result()->fetch_assoc();
+$pStmt->close();
+
 $myProfile = [
-    'name' => 'Jane Doe',
-    'bio' => 'Fluent in sarcasm, romcom movie quotes and Spotify playlists',
+    'name' => $myProfileData['full_name'] ?? $_SESSION['userName'] ?? 'User',
+    'bio'  => $myProfileData['bio'] ?? 'No bio set yet.',
+    'photo' => $myProfileData['picture_url'] ?? null
 ];
- 
+
+// Linked Matchmaker Profile
+$mStmt = $db->prepare("
+    SELECT p.full_name, p.bio, p.picture_url 
+    FROM Account_Linking al 
+    JOIN Profiles p ON al.matchmaker_user_id = p.user_id 
+    WHERE al.single_user_id = ?
+");
+$mStmt->bind_param("i", $currentUserId);
+$mStmt->execute();
+$matchmakerData = $mStmt->get_result()->fetch_assoc();
+$mStmt->close();
+
 $myMatchmaker = [
-    'name' => 'Sophia Walker',
-    'bio' => "I'm filtering out the weirdos so you don't have to, thank me later mwah!!",
+    'name' => $matchmakerData['full_name'] ?? 'Not Linked Yet',
+    'bio'  => $matchmakerData['bio'] ?? 'Enter your link code in profile setup to connect with a matchmaker.',
+    'photo' => $matchmakerData['picture_url'] ?? null
 ];
- 
-$pendingVouchCount = 4;
-$waitingOnThemCount = 2;
- 
-$recentVouch = [
-    'name' => 'John Smith',
-    'age' => 24,
-    'location' => 'Chicago, USA',
-    'gender' => 'Male',
-    'occupation' => 'UX Designer',
-    'hobbies' => 'Hiking',
-    'note' => 'Good pick, he has dogs and loves hiking just like you!',
+
+// Vouch History & Counts
+$vouchHistory = [];
+$vStmt = $db->prepare("
+    SELECT p.full_name, 
+           TIMESTAMPDIFF(YEAR, STR_TO_DATE(p.birth_year, '%Y'), CURDATE()) as age, 
+           v.timestamp, 
+           v.status, 
+           v.matchmaker_note 
+    FROM Vouching v
+    JOIN Profiles p ON v.candidate_user_id = p.user_id
+    WHERE v.requesting_single_id = ?
+    ORDER BY v.timestamp DESC
+");
+
+if ($vStmt) {
+    $vStmt->bind_param("i", $currentUserId);
+    $vStmt->execute();
+    $res = $vStmt->get_result();
+    while ($row = $res->fetch_assoc()) {
+        $vouchHistory[] = [
+            'name'   => $row['full_name'],
+            'age'    => $row['age'] ?? 'N/A',
+            'date'   => date('d.m.y', strtotime($row['timestamp'])),
+            'status' => ucfirst($row['status']),
+            'note'   => $row['matchmaker_note'] ?? 'No note left.'
+        ];
+    }
+    $vStmt->close();
+}
+
+$recentVouch = $vouchHistory[0] ?? [
+    'name' => 'No Vouches Yet',
+    'age' => '-',
+    'location' => '-',
+    'gender' => '-',
+    'occupation' => '-',
+    'hobbies' => '-',
+    'note' => 'Your matchmaker has not vouched for anyone yet.'
 ];
- 
-$vouchHistory = [
-    ['name' => 'Nicholas', 'age' => 27, 'date' => '20.07.26', 'status' => 'Rejected', 'note' => 'Not really your type, prefers dogs over cats'],
-    ['name' => 'Jack',     'age' => 22, 'date' => '16.07.26', 'status' => 'Accepted', 'note' => 'Super charming and loves romcoms too ahhh!'],
-    ['name' => 'Daniel',   'age' => 25, 'date' => '02.07.26', 'status' => 'Accepted', 'note' => 'Likes hiking too and lives nearby'],
-    ['name' => 'Ethan',    'age' => 23, 'date' => '28.06.26', 'status' => 'Rejected', 'note' => 'Looking for something a bit more casual'],
-    ['name' => 'Aiden',    'age' => 24, 'date' => '27.06.26', 'status' => 'Accepted', 'note' => 'Perfect match on paper!'],
-];
+
+$pendingVouchCount = count(array_filter($vouchHistory, fn($v) => strtolower($v['status']) === 'pending'));
+$waitingOnThemCount = count(array_filter($vouchHistory, fn($v) => strtolower($v['status']) === 'accepted'));
 ?>
 
 <!DOCTYPE html>

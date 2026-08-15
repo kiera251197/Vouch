@@ -463,15 +463,15 @@ body {
 
 .logoutBtn {
     position: absolute;
-    top: 232px;
+    bottom: 32px;
     right: 32px;
-    z-index: 1000;
+    z-index: 6767;
     font-size: 20px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: var(--dove);
-    color: var(--dragonfruit);
+    background: var(--dragonfruit);
+    color: var(--dove);
     padding: 8px 18px;
     border-radius: 20px;
     text-decoration: none;
@@ -486,7 +486,7 @@ body {
 }
 
 .logoutBtn:hover {
-    background: var(--dove);
+    background: var(--dragonfruit);
     transform: translateY(-2px);
     box-shadow: 4px 4px 12px rgba(88, 0, 53, 0.476);
 }

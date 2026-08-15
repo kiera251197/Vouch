@@ -25,15 +25,17 @@ body {
     margin: 0;
     font-family: var(--fontBody);
     color: var(--night);
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .dashboardBody {
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
-    padding: 40px 20px;
+    align-items: flex-start;
+    min-height: 100vh;
+    height: auto;
+    padding: 40px 20px 40px 20px;
     background: url(../assets/images/pinkBG.jpg);
     background-position: center;
     background-size: cover;
@@ -74,7 +76,8 @@ body {
 }
 
 #vouchHistoryCard { 
-    grid-column: 3; 
+    grid-column: 3;
+    overflow-y: auto
 }
 
 .actionBtnGroup {
@@ -430,15 +433,15 @@ body {
 
 .logoutBtn {
     position: absolute;
-    top: 232px;
+    bottom: 32px;
     right: 32px;
-    z-index: 1000;
+    z-index: 6767;
     font-size: 20px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: var(--dove);
-    color: var(--dragonfruit);
+    background: var(--dragonfruit);
+    color: var(--dove);
     padding: 8px 18px;
     border-radius: 20px;
     text-decoration: none;
@@ -453,12 +456,18 @@ body {
 }
 
 .logoutBtn:hover {
-    background: var(--dove);
+    background: var(--dragonfruit);
     transform: translateY(-2px);
     box-shadow: 4px 4px 12px rgba(88, 0, 53, 0.476);
 }
 
 /* Responsiveness */
+@media (max-width: 1024px) {
+    .dashboardBody {
+        padding-top: 90px;
+    }
+}
+
 @media (max-width: 800px) {
     .dashboardGrid {
         grid-template-columns: 1fr;
@@ -471,6 +480,7 @@ body {
     #mostRecentVouchCard,
     #vouchHistoryCard {
         grid-column: 1;
+        max-height: none
     }
 
     .recentVouchLayout {
