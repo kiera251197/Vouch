@@ -39,8 +39,8 @@ class Profile {
 
     // Updates the profile information for a Matchmaker user
     public function updateMatchmakerProfile(int $userId, array $data, ?string $photoPath): void {
-        $relationship = $data['relationship'] ?? '';
-        $credentials  = $data['credentials'] ?? '';
+        $relationship = trim($data['relationship'] ?? '');
+        $credentials  = trim($data['credentials'] ?? $data['linkCode'] ?? '');
         
         if ($photoPath) {
             $stmt = $this->db->prepare("UPDATE Profiles SET relationship_to_single=?, credentials=?, picture_url=? WHERE user_id=?");

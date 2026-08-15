@@ -49,7 +49,7 @@ class ProfileController {
     // Handles the Matchmaker user setup process
     public function processMatchmakerSetup(int $userId, array $postData, array $files): array {
         $relationship = trim($postData['relationship'] ?? '');
-        $credentials  = trim($postData['credentials'] ?? '');
+        $credentials  = trim($postData['credentials'] ?? $postData['linkCode'] ?? '');
         $linkCode     = trim($postData['linkCode'] ?? '');
 
         if ($relationship === '' || $credentials === '') {
