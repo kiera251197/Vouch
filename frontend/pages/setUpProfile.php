@@ -20,8 +20,10 @@ $activeStep = 'step1';
 
 $displayName = $controller->profileModel->getDisplayName($userId);
 
-// Gets a code for the Single 
-$generatedCode = $controller->linkingModel->ensureCode($userId);
+$generatedCode = '';
+if (($_SESSION['user_role'] ?? '') !== 'matchmaker') {
+    $generatedCode = $controller->linkingModel->getOrCreateLinkCode($currentUserId);
+}
 
 // Handle POST submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -423,8 +425,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     function regenerateCode() {
-        const randomCode = Math.floor(10000 + Math.random() * 90000).toString();
-        document.getElementById('codeDisplay').textContent = randomCode.split('').join(' ');
+        const formData = new FormData();
+        formData.append('action', 'regenerateCode');
+
+        fetch('setupProfile.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.code) {
+                document.getElementById('codeDisplay').textContent = data.code.split('').join(' ');
+            }
+        })
+        .catch(err => console.error('Error regenerating code:', err));
     }
 
     // Reopen to active step if a submission error occurs
