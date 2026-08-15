@@ -24,9 +24,9 @@ class AuthController {
         $user = $this->userModel->findByEmail($email);
         if ($user && password_verify($password, $user['password'])) {
             // Standardized session variables across the app
-            $_SESSION['user_id']   = $user['user_id'];
-            $_SESSION['userName']  = $user['full_name'] ?? 'User';
-            $_SESSION['email']     = $user['email'];
+            $_SESSION['user_id'] = $user['user_id'];
+            $_SESSION['userName'] = $user['full_name'] ?? 'User';
+            $_SESSION['email'] = $user['email'];
             $_SESSION['user_role'] = $user['user_role'];
 
             if (empty($user['user_role'])) {
@@ -55,9 +55,9 @@ class AuthController {
 
         $newUserId = $this->userModel->registerUser($fullName, $email, $password);
         if ($newUserId) {
-            $_SESSION['user_id']   = $newUserId;
-            $_SESSION['userName']  = $fullName;
-            $_SESSION['email']     = $email;
+            $_SESSION['user_id'] = $newUserId;
+            $_SESSION['userName'] = $fullName;
+            $_SESSION['email'] = $email;
             $_SESSION['user_role'] = null; 
             header("Location: setupProfile.php");
             exit();

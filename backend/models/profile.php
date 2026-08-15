@@ -18,13 +18,13 @@ class Profile {
 
     // Updates the profile information for a Single user
     public function updateSingleProfile(int $userId, array $data, ?string $photoPath): void {
-        $birthYear  = $data['birthYear'] ?? null;
-        $gender     = $data['gender'] ?? '';
-        $location   = $data['location'] ?? '';
+        $birthYear  = !empty($data['birthYear']) ? (string)$data['birthYear'] : null;
+        $gender = $data['gender'] ?? '';
+        $location = $data['location'] ?? '';
         $occupation = $data['occupation'] ?? '';
-        $hobbies    = $data['hobbies'] ?? '';
-        $bio        = $data['bio'] ?? '';
-        $hook       = $data['hook'] ?? '';
+        $hobbies = $data['hobbies'] ?? '';
+        $bio = $data['bio'] ?? '';
+        $hook = $data['hook'] ?? '';
 
         if ($photoPath) {
             $stmt = $this->db->prepare("UPDATE Profiles SET birth_year=?, gender=?, location=?, occupation=?, hobbies=?, bio=?, hook=?, picture_url=? WHERE user_id=?");
@@ -40,7 +40,7 @@ class Profile {
     // Updates the profile information for a Matchmaker user
     public function updateMatchmakerProfile(int $userId, array $data, ?string $photoPath): void {
         $relationship = trim($data['relationship'] ?? '');
-        $credentials  = trim($data['credentials'] ?? $data['linkCode'] ?? '');
+        $credentials = trim($data['credentials'] ?? $data['linkCode'] ?? '');
         
         if ($photoPath) {
             $stmt = $this->db->prepare("UPDATE Profiles SET relationship_to_single=?, credentials=?, picture_url=? WHERE user_id=?");

@@ -16,7 +16,12 @@ $db = Database::getConnection();
 $currentUserId = (int)$_SESSION['user_id'];
 
 // Single Profile
-$pStmt = $db->prepare("SELECT full_name, bio, picture_url FROM Profiles WHERE user_id = ?");
+$pStmt = $db->prepare("
+    SELECT full_name, bio, picture_url, location, gender, occupation, hobbies,
+    TIMESTAMPDIFF(YEAR, STR_TO_DATE(birth_year, '%Y'), CURDATE()) as age 
+    FROM Profiles 
+    WHERE user_id = ?
+");
 $pStmt->bind_param("i", $currentUserId);
 $pStmt->execute();
 $myProfileData = $pStmt->get_result()->fetch_assoc();
@@ -24,13 +29,18 @@ $pStmt->close();
 
 $myProfile = [
     'name' => $myProfileData['full_name'] ?? $_SESSION['userName'] ?? 'User',
-    'bio'  => $myProfileData['bio'] ?? 'No bio set yet.',
-    'photo' => $myProfileData['picture_url'] ?? null
+    'bio' => !empty($myProfileData['bio']) ? $myProfileData['bio'] : 'No bio set yet.',
+    'photo' => $myProfileData['picture_url'] ?? null,
+    'age' => $myProfileData['age'] ?? 'N/A',
+    'location' => $myProfileData['location'] ?? 'N/A',
+    'gender' => $myProfileData['gender'] ?? 'N/A',
+    'occupation' => $myProfileData['occupation'] ?? 'N/A',
+    'hobbies' => $myProfileData['hobbies'] ?? 'N/A'
 ];
 
-// Linked Matchmaker Profile
+// Matchmaker Profile
 $mStmt = $db->prepare("
-    SELECT p.full_name, p.bio, p.picture_url 
+    SELECT p.full_name, p.bio, p.picture_url, p.credentials
     FROM Account_Linking al 
     JOIN Profiles p ON al.matchmaker_user_id = p.user_id 
     WHERE al.single_user_id = ?
@@ -40,9 +50,20 @@ $mStmt->execute();
 $matchmakerData = $mStmt->get_result()->fetch_assoc();
 $mStmt->close();
 
+$matchmakerText = 'Enter your link code in profile setup to connect with a matchmaker';
+if (!empty($matchmakerData)) {
+    if (!empty($matchmakerData['credentials'])) {
+        $matchmakerText = $matchmakerData['credentials'];
+    } elseif (!empty($matchmakerData['bio'])) {
+        $matchmakerText = $matchmakerData['bio'];
+    } else {
+        $matchmakerText = 'No credentials set yet';
+    }
+}
+
 $myMatchmaker = [
     'name' => $matchmakerData['full_name'] ?? 'Not Linked Yet',
-    'bio'  => $matchmakerData['bio'] ?? 'Enter your link code in profile setup to connect with a matchmaker.',
+    'bio'  => $matchmakerData['bio'] ?? $matchmakerText,
     'photo' => $matchmakerData['picture_url'] ?? null
 ];
 
@@ -50,10 +71,15 @@ $myMatchmaker = [
 $vouchHistory = [];
 $vStmt = $db->prepare("
     SELECT p.full_name, 
+           p.picture_url,
+           p.location,
+           p.gender,
+           p.occupation,
+           p.hobbies,
            TIMESTAMPDIFF(YEAR, STR_TO_DATE(p.birth_year, '%Y'), CURDATE()) as age, 
            v.timestamp, 
            v.status, 
-           v.matchmaker_note 
+           v.matchmaker_note
     FROM Vouching v
     JOIN Profiles p ON v.candidate_user_id = p.user_id
     WHERE v.requesting_single_id = ?
@@ -66,24 +92,30 @@ if ($vStmt) {
     $res = $vStmt->get_result();
     while ($row = $res->fetch_assoc()) {
         $vouchHistory[] = [
-            'name'   => $row['full_name'],
-            'age'    => $row['age'] ?? 'N/A',
-            'date'   => date('d.m.y', strtotime($row['timestamp'])),
-            'status' => ucfirst($row['status']),
-            'note'   => $row['matchmaker_note'] ?? 'No note left.'
+            'name'       => $row['full_name'],
+            'photo'      => $row['picture_url'] ?? null,
+            'age'        => $row['age'] ?? '-',
+            'location'   => $row['location'] ?? '-',
+            'gender'     => $row['gender'] ?? '-',
+            'occupation' => $row['occupation'] ?? '-',
+            'hobbies'    => $row['hobbies'] ?? '-',
+            'date'       => date('d.m.y', strtotime($row['timestamp'])),
+            'status'     => ucfirst($row['status']),
+            'note'       => $row['matchmaker_note'] ?? 'No note left.'
         ];
     }
     $vStmt->close();
 }
 
 $recentVouch = $vouchHistory[0] ?? [
-    'name' => 'No Vouches Yet',
-    'age' => '-',
-    'location' => '-',
-    'gender' => '-',
+    'name'       => 'No Vouches Yet',
+    'photo'      => null,
+    'age'        => '-',
+    'location'   => '-',
+    'gender'     => '-',
     'occupation' => '-',
-    'hobbies' => '-',
-    'note' => 'Your matchmaker has not vouched for anyone yet.'
+    'hobbies'    => '-',
+    'note'       => 'Your matchmaker has not vouched for anyone yet.'
 ];
 
 $pendingVouchCount = count(array_filter($vouchHistory, fn($v) => strtolower($v['status']) === 'pending'));
@@ -121,7 +153,11 @@ $waitingOnThemCount = count(array_filter($vouchHistory, fn($v) => strtolower($v[
             <!-- My Profile -->
             <div class="dashCard" id="myProfileCard">
                 <a href="setupProfile.php" class="editIconBtn" title="Edit my profile"><img src="../assets/images/pinkEditIcon.png" alt="Edit"></a>
-                <div class="profileImg" style="background-color: #DE6993;"></div>
+                <?php if (!empty($myProfile['photo'])): ?>
+                    <img src="<?= htmlspecialchars($myProfile['photo']) ?>" class="profileImg" alt="Profile Photo">
+                <?php else: ?>
+                    <div class="profileImg" style="background-color: var(--petal);"></div>
+                <?php endif; ?>
                 <div class="cardLabel">MY PROFILE</div>
                 <div class="cardName"><?= htmlspecialchars($myProfile['name']) ?></div>
                 <div class="cardBio">"<?= htmlspecialchars($myProfile['bio']) ?>"</div>
@@ -134,7 +170,11 @@ $waitingOnThemCount = count(array_filter($vouchHistory, fn($v) => strtolower($v[
             <!-- My Matchmaker -->
             <div class="dashCard" id="myMatchmakerCard">
                 <a href="setUpProfile.php" class="editIconBtn" title="Edit"><img src="../assets/images/orangeEditIcon.png" alt="Edit"></a>
-                <div class="profileImg" style="background-color: #D95205;"></div>
+                <?php if (!empty($myMatchmaker['photo'])): ?>
+                    <img src="<?= htmlspecialchars($myMatchmaker['photo']) ?>" class="profileImg" alt="Matchmaker Photo" style="object-fit: cover;">
+                <?php else: ?>
+                    <div class="profileImg" style="background-color: var(--sunkissed);"></div>
+                <?php endif; ?>
                 <div class="cardLabel cardLabelOrange">MY MATCHMAKER</div>
                 <div class="cardName"><?= htmlspecialchars($myMatchmaker['name']) ?></div>
                 <div class="cardBio">"<?= htmlspecialchars($myMatchmaker['bio']) ?>"</div>
@@ -176,7 +216,11 @@ $waitingOnThemCount = count(array_filter($vouchHistory, fn($v) => strtolower($v[
                 <a href="javascript:void(0)" class="browseCandidatesBtn" onclick="openCuratedModal()"><img src="../assets/images/pinkLogo.png" alt="Browse Candidates"></a>
 
                 <div class="recentVouchLayout">
-                    <div class="profileLarge" style="background-color: #8E1353"></div>
+                    <?php if (!empty($recentVouch['photo'])): ?>
+                        <img src="<?= htmlspecialchars($recentVouch['photo']) ?>" class="profileLarge" alt="Candidate" style="object-fit: cover;">
+                    <?php else: ?>
+                        <div class="profileLarge" style="background-color: var(--dragonfruit)"></div>
+                    <?php endif; ?>
                     <div class="recentVouchDetails">
                         <div class="detailRow">
                             <div class="detailCol">
@@ -240,10 +284,20 @@ $waitingOnThemCount = count(array_filter($vouchHistory, fn($v) => strtolower($v[
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($vouchHistory as $row): ?>
+                        <?php if (empty($vouchHistory)): ?>
                             <tr>
-                                <td class="historyNameCell">
-                                    <span class="profileSmall" style="background-color: #F28806;"></span>
+                                <td colspan="4" style="text-align: center; padding: 24px; color: var(--coral); font-size: 14px;">
+                                    No vouches recorded yet. Your matchmaker's suggestions will appear here!
+                                </td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($vouchHistory as $row): ?>
+                               <td class="historyNameCell">
+                                    <?php if (!empty($row['photo'])): ?>
+                                        <img src="<?= htmlspecialchars($row['photo']) ?>" class="profileSmall" alt="Thumbnail" style="object-fit: cover; width: 28px; height: 28px; border-radius: 50%; vertical-align: middle; margin-right: 8px;">
+                                    <?php else: ?>
+                                        <span class="profileSmall" style="background-color: var(--sunkissed);"></span>
+                                    <?php endif; ?>
                                     <?= htmlspecialchars($row['name']) ?>
                                 </td>
 
@@ -261,12 +315,12 @@ $waitingOnThemCount = count(array_filter($vouchHistory, fn($v) => strtolower($v[
                                             <?= htmlspecialchars($row['status']) ?>
                                         </span>
                                         <div class="statusInfo">
-                                            <strong style="font-weight: 600;">SOPHIA SAYS:</strong> "<?= htmlspecialchars($row['note']) ?>"
+                                            <strong style="font-weight: 600;"><?= strtoupper(htmlspecialchars(explode(' ', $myMatchmaker['name'])[0])) ?> SAYS:</strong> "<?= htmlspecialchars($row['note']) ?>"
                                         </div>
                                     </div>
                                 </td>
-                            </tr>
-                        <?php endforeach; ?>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>

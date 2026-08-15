@@ -189,12 +189,19 @@ body {
     height: 152px;
     border-radius: 50%;
     margin: 0 auto 16px auto;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    flex-shrink: 0;
 }
 
 .profileLarge {
     width: 200px;
     height: 200px;
     border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
     flex-shrink: 0;
 }
 

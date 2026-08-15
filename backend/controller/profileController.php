@@ -21,10 +21,10 @@ class ProfileController {
 
     // Handles the Single user setup process
     public function processSingleSetup(int $userId, array $postData, array $files): array {
-        $birthYear    = $postData['birthYear'] ?? null;
-        $gender       = $postData['gender'] ?? null;
-        $location     = trim($postData['location'] ?? '');
-        $targetAges   = $postData['targetAges'] ?? null;
+        $birthYear = $postData['birthYear'] ?? null;
+        $gender = $postData['gender'] ?? null;
+        $location = trim($postData['location'] ?? '');
+        $targetAges = $postData['targetAges'] ?? null;
         $targetGender = $postData['targetGender'] ?? null;
 
         if (!$birthYear || !$gender || $location === '') {
@@ -49,8 +49,8 @@ class ProfileController {
     // Handles the Matchmaker user setup process
     public function processMatchmakerSetup(int $userId, array $postData, array $files): array {
         $relationship = trim($postData['relationship'] ?? '');
-        $credentials  = trim($postData['credentials'] ?? $postData['linkCode'] ?? '');
-        $linkCode     = trim($postData['linkCode'] ?? '');
+        $credentials = trim($postData['credentials'] ?? $postData['linkCode'] ?? '');
+        $linkCode = trim($postData['linkCode'] ?? '');
 
         if ($relationship === '' || $credentials === '') {
             return ['error' => 'Please fill in your relationship and credentials.', 'step' => 'mStep2'];
