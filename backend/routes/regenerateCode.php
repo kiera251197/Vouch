@@ -6,7 +6,7 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../models/accountLinking.php';
 
 // Checks if the user is logged in
-if (!isset($_SESSION['userId'])) {
+if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'Unauthorised']);
     exit();
 }
@@ -14,7 +14,7 @@ if (!isset($_SESSION['userId'])) {
 // Regenerates a new unique code for the logged in Single 
 $db = Database::getConnection();
 $linkingModel = new AccountLinking($db);
-$newCode = $linkingModel->generateNewCode($_SESSION['userId']);
+$newCode = $linkingModel->generateNewCode($_SESSION['user_id']);
 
 echo json_encode(['code' => $newCode]);
 exit();

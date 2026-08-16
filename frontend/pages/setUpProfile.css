@@ -168,7 +168,7 @@ small {
 }
 
 .stepBlock.active { 
-    display: block; 
+    display: block !important; 
 }
 
 .roleChoices {

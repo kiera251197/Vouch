@@ -13,19 +13,21 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $db = Database::getConnection();
-$currentUserId = (int)$_SESSION['user_id'];
+$currentProfileId = (int)$_SESSION['user_id']; 
 
 // Single Profile
 $pStmt = $db->prepare("
-    SELECT full_name, bio, picture_url, location, gender, occupation, hobbies,
+    SELECT user_id, full_name, bio, picture_url, location, gender, occupation, hobbies,
     TIMESTAMPDIFF(YEAR, STR_TO_DATE(birth_year, '%Y'), CURDATE()) as age 
     FROM Profiles 
     WHERE user_id = ?
 ");
-$pStmt->bind_param("i", $currentUserId);
+$pStmt->bind_param("i", $currentProfileId);
 $pStmt->execute();
 $myProfileData = $pStmt->get_result()->fetch_assoc();
 $pStmt->close();
+
+$actualUserId = $myProfileData['user_id'] ?? $currentProfileId;
 
 $myProfile = [
     'name' => $myProfileData['full_name'] ?? $_SESSION['userName'] ?? 'User',
@@ -43,9 +45,9 @@ $mStmt = $db->prepare("
     SELECT p.full_name, p.bio, p.picture_url, p.credentials
     FROM Account_Linking al 
     JOIN Profiles p ON al.matchmaker_user_id = p.user_id 
-    WHERE al.single_user_id = ?
+    WHERE al.single_user_id = ? OR al.single_user_id = ?
 ");
-$mStmt->bind_param("i", $currentUserId);
+$mStmt->bind_param("ii", $actualUserId, $currentProfileId);
 $mStmt->execute();
 $matchmakerData = $mStmt->get_result()->fetch_assoc();
 $mStmt->close();
@@ -62,12 +64,12 @@ if (!empty($matchmakerData)) {
 }
 
 $myMatchmaker = [
-    'name' => $matchmakerData['full_name'] ?? 'Not Linked Yet',
+    'name' => $matchmakerData['full_name'] ?? 'Matchmaker',
     'bio'  => $matchmakerData['bio'] ?? $matchmakerText,
     'photo' => $matchmakerData['picture_url'] ?? null
 ];
 
-// Vouch History & Counts
+// 3. Vouch History
 $vouchHistory = [];
 $vStmt = $db->prepare("
     SELECT p.full_name, 
@@ -82,12 +84,12 @@ $vStmt = $db->prepare("
            v.matchmaker_note
     FROM Vouching v
     JOIN Profiles p ON v.candidate_user_id = p.user_id
-    WHERE v.requesting_single_id = ?
+    WHERE v.requesting_single_id = ? OR v.requesting_single_id = ?
     ORDER BY v.timestamp DESC
 ");
 
 if ($vStmt) {
-    $vStmt->bind_param("i", $currentUserId);
+    $vStmt->bind_param("ii", $actualUserId, $currentProfileId);
     $vStmt->execute();
     $res = $vStmt->get_result();
     while ($row = $res->fetch_assoc()) {
@@ -108,7 +110,7 @@ if ($vStmt) {
 }
 
 $recentVouch = $vouchHistory[0] ?? [
-    'name'       => 'No Vouches Yet',
+    'name'       => 'Candidate',
     'photo'      => null,
     'age'        => '-',
     'location'   => '-',

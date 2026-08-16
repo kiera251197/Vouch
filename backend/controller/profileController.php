@@ -38,7 +38,11 @@ class ProfileController {
 
         $this->userModel->updateRole($userId, 'single');
         $this->profileModel->updateSingleProfile($userId, $postData, $photoPath);
-        $this->profileModel->updatePreferences($userId, $targetGender, $targetAges);
+        
+        if ($targetGender && $targetAges) {
+            $this->profileModel->updatePreferences($userId, $targetGender, $targetAges);
+        }
+        
         $this->handleGalleryUploads($userId, $files['galleryPhotos'] ?? null);
 
         $_SESSION['user_role'] = 'single';
@@ -63,7 +67,8 @@ class ProfileController {
             return ['error' => 'That code doesn\'t match an available Single. Try again.', 'step' => 'mStep3'];
         }
 
-        $photoPath = $this->uploadFile($files['profilePhoto'] ?? null, $userId, 'profiles');
+        $photoPath = $this->uploadFile($files['matchmakerProfilePhoto'] ?? null, $userId, 'profiles');
+
         $this->userModel->updateRole($userId, 'matchmaker');
         $this->profileModel->updateMatchmakerProfile($userId, $postData, $photoPath);
 
@@ -72,14 +77,79 @@ class ProfileController {
         exit();
     }
 
+    // // Cloudinary upload for profile photos
+    // private function uploadToCloudinary(string $tmpPath, string $folder): ?string {
+    //     $apiUrl = "https://api.cloudinary.com/v1_1/{$this->cloudName}/image/upload";
+
+    //     $postData = [
+    //         'file'          => new CURLFile($tmpPath),
+    //         'upload_preset' => $this->uploadPreset,
+    //         'folder'        => 'vouch/' . $folder
+    //     ];
+
+    //     $ch = curl_init();
+    //     curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    //     curl_setopt($ch, CURLOPT_POST, true);
+    //     curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    //     $response = curl_exec($ch);
+    //     curl_close($ch);
+
+    //     if (!$response) return null;
+
+    //     $json = json_decode($response, true);
+        
+    //     // Returns the secure HTTPS Cloudinary image URL
+    //     return $json['secure_url'] ?? null;
+    // }
+
+    // // Handles single file upload to Cloudinary
+    // private function uploadFile(?array $file, int $userId, string $folder): ?string {
+    //     if (!$file || empty($file['name']) || $file['error'] !== UPLOAD_ERR_OK) return null;
+
+    //     $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    //     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) return null;
+
+    //     return $this->uploadToCloudinary($file['tmp_name'], $folder);
+    // }
+    
+    // Handles single file upload to Cloudinary
+    private function uploadFile(?array $file, int $userId, string $folder): ?string {
+        $debugPath = __DIR__ . '/../../debug.log';
+
+        if (!$file) {
+            file_put_contents($debugPath, date('Y-m-d H:i:s') . " uploadFile: no file array received\n", FILE_APPEND);
+            return null;
+        }
+        if (empty($file['name'])) {
+            file_put_contents($debugPath, date('Y-m-d H:i:s') . " uploadFile: file name is empty\n", FILE_APPEND);
+            return null;
+        }
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            file_put_contents($debugPath, date('Y-m-d H:i:s') . " uploadFile: upload error code = " . $file['error'] . "\n", FILE_APPEND);
+            return null;
+        }
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+            file_put_contents($debugPath, date('Y-m-d H:i:s') . " uploadFile: rejected extension '$ext'\n", FILE_APPEND);
+            return null;
+        }
+
+        file_put_contents($debugPath, date('Y-m-d H:i:s') . " uploadFile: passed validation, calling Cloudinary\n", FILE_APPEND);
+        return $this->uploadToCloudinary($file['tmp_name'], $folder);
+    }
+
     // Cloudinary upload for profile photos
     private function uploadToCloudinary(string $tmpPath, string $folder): ?string {
+        $debugPath = __DIR__ . '/../../debug.log';
         $apiUrl = "https://api.cloudinary.com/v1_1/{$this->cloudName}/image/upload";
 
         $postData = [
-            'file'          => new CURLFile($tmpPath),
+            'file' => new CURLFile($tmpPath),
             'upload_preset' => $this->uploadPreset,
-            'folder'        => 'vouch/' . $folder
+            'folder' => 'vouch/' . $folder
         ];
 
         $ch = curl_init();
@@ -89,24 +159,13 @@ class ProfileController {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $response = curl_exec($ch);
+        $curlError = curl_error($ch);
         curl_close($ch);
 
         if (!$response) return null;
 
         $json = json_decode($response, true);
-        
-        // Returns the secure HTTPS Cloudinary image URL
         return $json['secure_url'] ?? null;
-    }
-
-    // Handles single file upload to Cloudinary
-    private function uploadFile(?array $file, int $userId, string $folder): ?string {
-        if (!$file || empty($file['name']) || $file['error'] !== UPLOAD_ERR_OK) return null;
-
-        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) return null;
-
-        return $this->uploadToCloudinary($file['tmp_name'], $folder);
     }
 
     // Handles multiple gallery uploads to Cloudinary
@@ -125,4 +184,5 @@ class ProfileController {
             }
         }
     }
+    
 }

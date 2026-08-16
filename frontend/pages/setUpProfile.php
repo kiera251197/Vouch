@@ -250,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <img src="../assets/images/uploadIcon.png" alt="Upload Icon">
                 </div>
                 <span class="uploadLabel">Click to Upload</span>
-                <input type="file" name="profilePhoto" accept="image/*" class="uploadInput" onchange="showFileName(this, this.closest('.uploadBox'))">
+                <input type="file" id="mainProfileInput" name="profilePhoto" accept="image/*" class="uploadInput" onchange="showFileName(this, this.closest('.uploadBox'))">
             </label>
 
             <h3>GALLERY</h3>
@@ -336,7 +336,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <img src="../assets/images/uploadIcon.png" alt="Upload Icon">
                 </div>
                 <span class="uploadLabel">Click to Upload</span>
-                <input type="file" name="profilePhoto" accept="image/*" class="uploadInput" onchange="showFileName(this, this.closest('.uploadBox'))">
+                <input type="file" name="matchmakerProfilePhoto" accept="image/*" class="uploadInput" onchange="showFileName(this, this.closest('.uploadBox'))">
             </label>
 
             <h3>MY CREDENTIALS</h3>
