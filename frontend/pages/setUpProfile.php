@@ -21,18 +21,20 @@ $activeStep = 'step1';
 $displayName = $controller->profileModel->getDisplayName($userId);
 
 $generatedCode = '';
-if (($_SESSION['user_role'] ?? '') !== 'matchmaker') {
-    $generatedCode = $controller->linkingModel->getOrCreateLinkCode($currentUserId);
-}
 
 // Handle POST submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $role = $_POST['userRole'] ?? '';
 
-    // AJAX Handler for regenerate code
     if (isset($_POST['action']) && $_POST['action'] === 'regenerateCode') {
         $newCode = $controller->linkingModel->generateNewCode($userId);
         echo json_encode(['code' => $newCode]);
+        exit();
+    }
+
+    if (isset($_POST['action']) && $_POST['action'] === 'getLinkCode') {
+        $code = $controller->linkingModel->getOrCreateLinkCode($userId);
+        echo json_encode(['code' => $code]);
         exit();
     }
 
@@ -413,6 +415,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (stepId === 'step1') {
             document.body.classList.remove('matchmakerMode');
         }
+
+        if (stepId === 'sStep5') {
+            fetchLinkCode();
+        }
+    }
+
+    function fetchLinkCode() {
+        const formData = new FormData();
+        formData.append('action', 'getLinkCode');
+
+        fetch('setupProfile.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.code) {
+                document.getElementById('codeDisplay').textContent = data.code.split('').join(' ');
+            }
+        })
+        .catch(err => console.error('Error fetching code:', err));
     }
 
     function showFileName(input, box) {

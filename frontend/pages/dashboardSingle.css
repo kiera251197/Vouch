@@ -98,6 +98,9 @@ body {
     font-weight: 700;
     letter-spacing: 1px;
     text-transform: uppercase;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     cursor: pointer;
     transition: all 0.5s ease-in-out;
 }
@@ -164,6 +167,9 @@ body {
 #nudgeBtn {
     background: #D95205;
     background: linear-gradient(90deg, rgba(217, 82, 5, 1) 0%, rgba(142, 19, 83, 1) 100%);
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .browseCandidatesBtn img{
