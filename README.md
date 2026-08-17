@@ -130,11 +130,11 @@ Vouch/
 
 ## Features and Functionality
 
-Users are greeted with a login/sign-up screen, after which a guided, multi-step profile setup wizard walks them through choosing a role (**Single** or **Matchmaker**), entering their details, uploading a profile photo and gallery (via Cloudinary), and either generating or claiming a 5-digit link code to connect the two accounts together.
+Users are greeted with a login/sign up screen, after which a guided, multi step profile setup walks them through choosing a role (**Single** or **Matchmaker**), entering their details, uploading a profile photo and gallery (via Cloudinary) and either generating or claiming a 5 digit link code to connect the two accounts together.
 
-Once linked, **Singles** land on a dashboard showing their own profile, their Matchmaker's profile, live stats on pending and waiting vouches, their most recent vouch with full candidate details, and a scrollable vouch history table with status tags and hover tooltips showing their Matchmaker's notes. They can browse curated candidates in a modal and request a vouch directly.
+Once linked, **Singles** land on a dashboard showing their own profile, their Matchmaker's profile, live stats on pending and waiting vouches, their most recent vouch with full candidate details and a scrollable vouch history table with status tags and hover tooltips showing their Matchmaker's notes. They can browse curated candidates in a modal and request a vouch directly.
 
-**Matchmakers** get a parallel dashboard: their linked Single's profile, their own profile, stats on vouches awaiting review and total vetoes, and a candidate review panel where they can browse a candidate's full profile, leave a message for their Single, and either **Vouch** or **Veto** — all logged to the vouch history table visible on both dashboards.
+**Matchmakers** get a parallel dashboard, their linked Single's profile, their own profile, stats on vouches awaiting review and total vetoes and a candidate review panel where they can browse a candidate's full profile, leave a message for their Single and either **Vouch** or **Veto** all logged to the vouch history table visible on both dashboards.
 
 ---
 
@@ -142,19 +142,15 @@ Once linked, **Singles** land on a dashboard showing their own profile, their Ma
 
 ### Ideation
 
-Dating apps typically rely on algorithmic matching or cold swiping through strangers. Vouch flips that model: it treats a trusted friend's judgment as the filter, formalising the age-old practice of asking a mate to vet your dates — but with a proper interface, tracked history, and shared visibility between both parties.
+Dating apps typically rely on algorithmic matching or cold swiping through strangers. Vouch flips that model, it treats a trusted friend's judgment as the filter, formalising the age old practice of asking a friend to vet your dates, but with a proper interface, tracked history and shared visibility between both parties.
 
 ### Figma File
 
-Want to view our wireframes? [Figma Document](https://www.figma.com/design/Fm0n3g1jnpOEoExkRdxxnZ/DV-200-Term-3?node-id=26-2&t=9qVzwx5GEMlkGORi-1)
+Want to view my wireframes? [Figma Document](https://www.figma.com/design/Fm0n3g1jnpOEoExkRdxxnZ/DV-200-Term-3?node-id=26-2&t=9qVzwx5GEMlkGORi-1)
 
 ---
 
 ## Future Implementation
-
-### Real-Time Notifications
-
-Replacing the current placeholder `alert()` calls (Nudge, Ping, Vouch, Veto) with a proper real-time notification system — likely via WebSockets or polling — so Singles and Matchmakers are notified the moment the other takes action, without needing to refresh.
 
 ### In-App Messaging
 
