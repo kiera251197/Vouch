@@ -2,7 +2,7 @@
 
 ![Vouch Banner](https://github.com/kiera251197/Vouch/blob/1204f5d571b0da8c01473ae70b7353d6a83444bc/frontend/assets/githubImages/vouchBanner.jpg)
 
-### [Kiera Poley 251197]
+### Kiera Poley 251197
 
 Skip the bad setups. Trust your inner circle.
 
@@ -55,7 +55,7 @@ This project is built using a PHP/MySQL stack with Cloudinary for image hosting:
 
 ### ERD
 
-![ERD Diagram](frontend/assets/images/erd-placeholder.png)
+![ERD Diagram](https://github.com/kiera251197/Vouch/blob/2095108e5b844fc04637374be868f42ceb467a56/frontend/assets/githubImages/vouchERD.png)
 *Add your ERD export here — Users, Profiles, Account_Linking, Singles_Preferences, Profile_Photos, and Vouching tables.*
 
 ---
