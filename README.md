@@ -1,6 +1,6 @@
 # 💌 Vouch
 
-![Vouch Logo](frontend/assets/githubImages/vouchBanner.png)
+![Vouch Banner]([frontend/assets/githubImages/vouchBanner.png](https://github.com/kiera251197/Vouch/blob/1204f5d571b0da8c01473ae70b7353d6a83444bc/frontend/assets/githubImages/vouchBanner.jpg))
 
 ### [Kiera Poley 251197]
 
