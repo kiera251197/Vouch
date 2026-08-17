@@ -144,6 +144,8 @@ Once linked, **Singles** land on a dashboard showing their own profile, their Ma
 
 Dating apps typically rely on algorithmic matching or cold swiping through strangers. Vouch flips that model, it treats a trusted friend's judgment as the filter, formalising the age old practice of asking a friend to vet your dates, but with a proper interface, tracked history and shared visibility between both parties.
 
+[Planning Document](https://drive.google.com/file/d/1OX6P4GUx8lOGQBCbQyEWwhgOuO6wPkC7/view?usp=sharing)
+
 ### Figma File
 
 Want to view my wireframes? [Figma Document](https://www.figma.com/design/Fm0n3g1jnpOEoExkRdxxnZ/DV-200-Term-3?node-id=26-2&t=9qVzwx5GEMlkGORi-1)
