@@ -33,14 +33,14 @@ Skip the bad setups. Trust your inner circle.
 
 ### App Description
 
-Vouch is a matchmaking dating app built on a simple idea: the people who know you best make better matchmakers than an algorithm. Instead of swiping through strangers, every **Single** links their account to a trusted **Matchmaker** — a friend, sibling, or partner-in-crime — who browses candidates on their behalf, vouches for the ones worth a shot, and vetoes the rest. Singles can also browse their own curated shortlist and request a vouch directly from their Matchmaker.
+Vouch is a matchmaking dating app built on a simple idea, the people who know you best make better matchmakers than an algorithm. Instead of swiping through strangers, every **Single** links their account to a trusted **Matchmaker**, a friend, sibling, or partner-in-crime who browses candidates on their behalf, Vouches for the ones worth a shot, and Vetoes the rest. Singles can also browse their own curated feed and request a vouch directly from their Matchmaker.
 
 The app supports two distinct user roles from the same login system:
 
-- **Singles** set up a dating profile (bio, photos, hobbies, preferences) and generate a unique 5-digit link code to share with their chosen Matchmaker.
-- **Matchmakers** create their own profile, enter their Single's link code to connect accounts, then browse candidates and vouch or veto on their Single's behalf — leaving notes explaining their reasoning.
+- **Singles** set up a dating profile (bio, photos, hobbies, preferences) and generate a unique 5 digit link code to share with their chosen Matchmaker
+- **Matchmakers** create their own profile, enter their Single's link code to connect accounts, then browse candidates and Vouch or Veto on their Single's behalf, leaving notes explaining their reasoning
 
-Both roles get a tailored dashboard showing their profile, their linked partner, live stats (pending vouches, vetoes, matches waiting on the other side), and a running vouch history with status tracking.
+Both roles get a tailored dashboard showing their profile, their linked partner, live stats (pending vouches, vetoes, matches waiting on the other side) and a running Vouch history with status tracking.
 
 ### Built With
 
