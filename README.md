@@ -56,7 +56,6 @@ This project is built using a PHP/MySQL stack with Cloudinary for image hosting:
 ### ERD
 
 ![ERD Diagram](https://github.com/kiera251197/Vouch/blob/2095108e5b844fc04637374be868f42ceb467a56/frontend/assets/githubImages/vouchERD.png)
-*Add your ERD export here — Users, Profiles, Account_Linking, Singles_Preferences, Profile_Photos, and Vouching tables.*
 
 ---
 
