@@ -2,6 +2,10 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../models/user.php';
 
@@ -23,7 +27,6 @@ class AuthController {
 
         $user = $this->userModel->findByEmail($email);
         if ($user && password_verify($password, $user['password'])) {
-            // Standardized session variables across the app
             $_SESSION['user_id'] = $user['user_id'];
             $_SESSION['userName'] = $user['full_name'] ?? 'User';
             $_SESSION['email'] = $user['email'];
@@ -38,6 +41,8 @@ class AuthController {
             }
             exit();
         }
+        
+        return ['error' => 'Invalid email or password.'];
     }
 
     // Handles user sign up

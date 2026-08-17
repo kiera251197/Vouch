@@ -1,36 +1,114 @@
 <?php
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
+session_start();
 
-$mySingle = [
-    'name' => 'Jane Doe',
-    'bio' => 'Fluent in sarcasm, romcom movie quotes and Spotify playlists',
-];
+require_once __DIR__ . '/../../backend/config/database.php';
+require_once __DIR__ . '/../../backend/models/user.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+
+$db = Database::getConnection();
+$matchmakerUserId = (int)$_SESSION['user_id'];
+
+// Matchmaker Profile
+$mStmt = $db->prepare("
+    SELECT full_name, bio, picture_url, credentials 
+    FROM Profiles 
+    WHERE user_id = ?
+");
+$mStmt->bind_param("i", $matchmakerUserId);
+$mStmt->execute();
+$matchmakerData = $mStmt->get_result()->fetch_assoc();
+$mStmt->close();
 
 $myProfile = [
-    'name' => 'Sophia Walker',
-    'bio' => "I'm filtering out the weirdos so you don't have to, thank me later mwah!!",
+    'name'  => $matchmakerData['full_name'] ?? $_SESSION['userName'] ?? 'Matchmaker',
+    'bio'   => $matchmakerData['bio'] ?? $matchmakerData['credentials'] ?? 'Filtering out the bad setups!',
+    'photo' => $matchmakerData['picture_url'] ?? null
 ];
 
-$awaitingVouchCount = 4;
-$totalVetosCount = 12;
+// Single Profile
+$sStmt = $db->prepare("
+    SELECT p.user_id, p.full_name, p.bio, p.picture_url
+    FROM Account_Linking al
+    JOIN Profiles p ON al.single_user_id = p.user_id
+    WHERE al.matchmaker_user_id = ?
+");
+$sStmt->bind_param("i", $matchmakerUserId);
+$sStmt->execute();
+$singleData = $sStmt->get_result()->fetch_assoc();
+$sStmt->close();
 
+$singleUserId = $singleData['user_id'] ?? null;
+$mySingle = [
+    'name'  => $singleData['full_name'] ?? 'No Single Linked',
+    'bio'   => $singleData['bio'] ?? 'Waiting for a Single to connect with your link code.',
+    'photo' => $singleData['picture_url'] ?? null
+];
+
+// Vouch History & Candidate Records
+$vouchHistory = [];
 $currentCandidate = [
-    'name' => 'John Smith',
-    'age' => 24,
-    'location' => 'Chicago, USA',
-    'gender' => 'Male',
-    'occupation' => 'Content Creator',
-    'hobbies' => 'Hiking',
+    'id'         => null,
+    'name'       => 'No Active Candidates',
+    'age'        => '-',
+    'location'   => '-',
+    'gender'     => '-',
+    'occupation' => '-',
+    'hobbies'    => '-'
 ];
 
-$vouchHistory = [
-    ['name' => 'Nicholas', 'age' => 27, 'date' => '20.07.26', 'status' => 'Rejected', 'note' => 'Not really your type, prefers dogs over cats'],
-    ['name' => 'Jack',     'age' => 22, 'date' => '16.07.26', 'status' => 'Accepted', 'note' => 'Super charming and loves romcoms too ahhh!'],
-    ['name' => 'Daniel',   'age' => 25, 'date' => '02.07.26', 'status' => 'Accepted', 'note' => 'Likes hiking too and lives nearby'],
-    ['name' => 'Ethan',    'age' => 23, 'date' => '28.06.26', 'status' => 'Rejected', 'note' => 'Looking for something a bit more casual'],
-    ['name' => 'Aiden',    'age' => 24, 'date' => '27.06.26', 'status' => 'Accepted', 'note' => 'Perfect match on paper!'],
-];
+if ($singleUserId) {
+    $vStmt = $db->prepare("
+        SELECT p.user_id,
+               p.full_name,
+               p.picture_url,
+               p.location,
+               p.gender,
+               p.occupation,
+               p.hobbies,
+               TIMESTAMPDIFF(YEAR, STR_TO_DATE(p.birth_year, '%Y'), CURDATE()) as age,
+               v.timestamp,
+               v.status,
+               v.matchmaker_note
+        FROM Vouching v
+        JOIN Profiles p ON v.candidate_user_id = p.user_id
+        WHERE v.requesting_single_id = ?
+        ORDER BY v.timestamp DESC
+    ");
+    $vStmt->bind_param("i", $singleUserId);
+    $vStmt->execute();
+    $res = $vStmt->get_result();
+
+    while ($row = $res->fetch_assoc()) {
+        $vouchHistory[] = [
+            'candidate_id' => $row['user_id'],
+            'name'         => $row['full_name'],
+            'photo'        => $row['picture_url'] ?? null,
+            'age'          => $row['age'] ?? '-',
+            'location'     => $row['location'] ?? '-',
+            'gender'       => $row['gender'] ?? '-',
+            'occupation'   => $row['occupation'] ?? '-',
+            'hobbies'      => $row['hobbies'] ?? '-',
+            'date'         => date('d.m.y', strtotime($row['timestamp'])),
+            'status'       => ucfirst($row['status']),
+            'note'         => $row['matchmaker_note'] ?? 'No note left.'
+        ];
+    }
+    $vStmt->close();
+
+    // Isolate the top candidate awaiting review, if any
+    if (!empty($vouchHistory)) {
+        $currentCandidate = $vouchHistory[0];
+    }
+}
+
+$awaitingVouchCount = count(array_filter($vouchHistory, fn($v) => strtolower($v['status']) === 'pending'));
+$totalVetosCount   = count(array_filter($vouchHistory, fn($v) => strtolower($v['status']) === 'rejected' || strtolower($v['status']) === 'vetoed'));
 ?>
 
 <!DOCTYPE html>
@@ -64,7 +142,11 @@ $vouchHistory = [
             <!-- My Single -->
             <div class="dashCard" id="mySingleCard">
                 <a href="setupProfile.php" class="editIconBtn" title="Edit Single Profile"><img src="../assets/images/pinkEditIcon.png" alt="Edit"></a>
-                <div class="profileImg" style="background-color: #DE6993;"></div>
+                <?php if (!empty($mySingle['photo'])): ?>
+                    <img src="<?= htmlspecialchars($mySingle['photo']) ?>" class="profileImg" alt="Single Photo" style="object-fit: cover;">
+                <?php else: ?>
+                    <div class="profileImg" style="background-color: var(--petal);"></div>
+                <?php endif; ?>
                 <div class="cardLabel">MY SINGLE</div>
                 <div class="cardName"><?= htmlspecialchars($mySingle['name']) ?></div>
                 <div class="cardBio">"<?= htmlspecialchars($mySingle['bio']) ?>"</div>
@@ -77,7 +159,11 @@ $vouchHistory = [
             <!-- My Profile (Matchmaker side badabing) -->
             <div class="dashCard" id="myProfileCard">
                 <a href="setUpProfile.php" class="editIconBtn" title="Edit Profile"><img src="../assets/images/orangeEditIcon.png" alt="Edit"></a>
-                <div class="profileImg" style="background-color: #D95205;"></div>
+                <?php if (!empty($myProfile['photo'])): ?>
+                    <img src="<?= htmlspecialchars($myProfile['photo']) ?>" class="profileImg" alt="Matchmaker Photo" style="object-fit: cover;">
+                <?php else: ?>
+                    <div class="profileImg" style="background-color: var(--sunkissed);"></div>
+                <?php endif; ?>
                 <div class="cardLabel cardLabelOrange">MY PROFILE</div>
                 <div class="cardName"><?= htmlspecialchars($myProfile['name']) ?></div>
                 <div class="cardBio">"<?= htmlspecialchars($myProfile['bio']) ?>"</div>
@@ -120,7 +206,11 @@ $vouchHistory = [
             </div>
 
             <div class="recentVouchLayout">
-                <div class="profileLarge" style="background-color: #8E1353"></div>
+                <?php if (!empty($currentCandidate['photo'])): ?>
+                    <img src="<?= htmlspecialchars($currentCandidate['photo']) ?>" class="profileLarge" alt="Candidate Photo" style="object-fit: cover;">
+                <?php else: ?>
+                    <div class="profileLarge" style="background-color: var(--dragonfruit);"></div>
+                <?php endif; ?>
 
                 <div class="recentVouchDetails">
                     <div class="detailRow">
@@ -190,34 +280,40 @@ $vouchHistory = [
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($vouchHistory as $row): ?>
+                        <?php if (empty($vouchHistory)): ?>
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 24px; color: var(--sunkissed); font-size: 14px;">
+                                    No candidates reviewed yet for your Single.
+                                </td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($vouchHistory as $row): ?>
                             <tr>
                                 <td class="historyNameCell">
-                                    <span class="profileSmall" style="background-color: #F28806;"></span>
+                                    <?php if (!empty($row['photo'])): ?>
+                                        <img src="<?= htmlspecialchars($row['photo']) ?>" class="profileSmall" alt="Thumbnail" style="object-fit: cover;">
+                                    <?php else: ?>
+                                        <span class="profileSmall" style="background-color: #F28806;"></span>
+                                    <?php endif; ?>
                                     <?= htmlspecialchars($row['name']) ?>
                                 </td>
-
-                                <td>
-                                    <?= htmlspecialchars($row['age']) ?>
-                                </td>
-
-                                <td>
-                                    <?= htmlspecialchars($row['date']) ?>
-                                </td>
-
+                                <td><?= htmlspecialchars($row['age']) ?></td>
+                                <td><?= htmlspecialchars($row['date']) ?></td>
                                 <td class="statusCell">
                                     <div class="statusInfoWrapper">
                                         <span class="statusTag status<?= htmlspecialchars($row['status']) ?>">
                                             <?= htmlspecialchars($row['status']) ?>
                                         </span>
                                         <div class="statusInfo">
-                                            <strong style="font-weight: 600;">SOPHIA SAYS:</strong> "<?= htmlspecialchars($row['note']) ?>"
+                                            <strong style="font-weight: 600;"><?= strtoupper(htmlspecialchars(explode(' ', $myProfile['name'])[0])) ?> SAYS:</strong> 
+                                            "<?= htmlspecialchars($row['note']) ?>"
                                         </div>
                                     </div>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
-                    </tbody>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                        </tbody>
                 </table>
             </div>
         </div>
