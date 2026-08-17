@@ -146,7 +146,7 @@ Dating apps typically rely on algorithmic matching or cold swiping through stran
 
 ### Figma File
 
-Want to view our wireframes? [Figma Document](#)(https://www.figma.com/design/Fm0n3g1jnpOEoExkRdxxnZ/DV-200-Term-3?node-id=26-2&t=9qVzwx5GEMlkGORi-1)
+Want to view our wireframes? [Figma Document](https://www.figma.com/design/Fm0n3g1jnpOEoExkRdxxnZ/DV-200-Term-3?node-id=26-2&t=9qVzwx5GEMlkGORi-1)
 
 ---
 
