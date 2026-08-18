@@ -1,8 +1,8 @@
 # 💌 Vouch
 
-![Vouch Logo](frontend/assets/githubImages/vouchBanner.png)
+![Vouch Banner](https://github.com/kiera251197/Vouch/blob/1204f5d571b0da8c01473ae70b7353d6a83444bc/frontend/assets/githubImages/vouchBanner.jpg)
 
-### [Kiera Poley 251197]
+### Kiera Poley 251197
 
 Skip the bad setups. Trust your inner circle.
 
@@ -33,14 +33,14 @@ Skip the bad setups. Trust your inner circle.
 
 ### App Description
 
-Vouch is a matchmaking dating app built on a simple idea: the people who know you best make better matchmakers than an algorithm. Instead of swiping through strangers, every **Single** links their account to a trusted **Matchmaker** — a friend, sibling, or partner-in-crime — who browses candidates on their behalf, vouches for the ones worth a shot, and vetoes the rest. Singles can also browse their own curated shortlist and request a vouch directly from their Matchmaker.
+Vouch is a matchmaking dating app built on a simple idea, the people who know you best make better matchmakers than an algorithm. Instead of swiping through strangers, every **Single** links their account to a trusted **Matchmaker**, a friend, sibling, or partner-in-crime who browses candidates on their behalf, Vouches for the ones worth a shot, and Vetoes the rest. Singles can also browse their own curated feed and request a vouch directly from their Matchmaker.
 
 The app supports two distinct user roles from the same login system:
 
-- **Singles** set up a dating profile (bio, photos, hobbies, preferences) and generate a unique 5-digit link code to share with their chosen Matchmaker.
-- **Matchmakers** create their own profile, enter their Single's link code to connect accounts, then browse candidates and vouch or veto on their Single's behalf — leaving notes explaining their reasoning.
+- **Singles** set up a dating profile (bio, photos, hobbies, preferences) and generate a unique 5 digit link code to share with their chosen Matchmaker
+- **Matchmakers** create their own profile, enter their Single's link code to connect accounts, then browse candidates and Vouch or Veto on their Single's behalf, leaving notes explaining their reasoning
 
-Both roles get a tailored dashboard showing their profile, their linked partner, live stats (pending vouches, vetoes, matches waiting on the other side), and a running vouch history with status tracking.
+Both roles get a tailored dashboard showing their profile, their linked partner, live stats (pending vouches, vetoes, matches waiting on the other side) and a running Vouch history with status tracking.
 
 ### Built With
 
@@ -55,8 +55,7 @@ This project is built using a PHP/MySQL stack with Cloudinary for image hosting:
 
 ### ERD
 
-![ERD Diagram](frontend/assets/images/erd-placeholder.png)
-*Add your ERD export here — Users, Profiles, Account_Linking, Singles_Preferences, Profile_Photos, and Vouching tables.*
+![ERD Diagram](https://github.com/kiera251197/Vouch/blob/2095108e5b844fc04637374be868f42ceb467a56/frontend/assets/githubImages/vouchERD.png)
 
 ---
 
@@ -131,11 +130,11 @@ Vouch/
 
 ## Features and Functionality
 
-Users are greeted with a login/sign-up screen, after which a guided, multi-step profile setup wizard walks them through choosing a role (**Single** or **Matchmaker**), entering their details, uploading a profile photo and gallery (via Cloudinary), and either generating or claiming a 5-digit link code to connect the two accounts together.
+Users are greeted with a login/sign up screen, after which a guided, multi step profile setup walks them through choosing a role (**Single** or **Matchmaker**), entering their details, uploading a profile photo and gallery (via Cloudinary) and either generating or claiming a 5 digit link code to connect the two accounts together.
 
-Once linked, **Singles** land on a dashboard showing their own profile, their Matchmaker's profile, live stats on pending and waiting vouches, their most recent vouch with full candidate details, and a scrollable vouch history table with status tags and hover tooltips showing their Matchmaker's notes. They can browse curated candidates in a modal and request a vouch directly.
+Once linked, **Singles** land on a dashboard showing their own profile, their Matchmaker's profile, live stats on pending and waiting vouches, their most recent vouch with full candidate details and a scrollable vouch history table with status tags and hover tooltips showing their Matchmaker's notes. They can browse curated candidates in a modal and request a vouch directly.
 
-**Matchmakers** get a parallel dashboard: their linked Single's profile, their own profile, stats on vouches awaiting review and total vetoes, and a candidate review panel where they can browse a candidate's full profile, leave a message for their Single, and either **Vouch** or **Veto** — all logged to the vouch history table visible on both dashboards.
+**Matchmakers** get a parallel dashboard, their linked Single's profile, their own profile, stats on vouches awaiting review and total vetoes and a candidate review panel where they can browse a candidate's full profile, leave a message for their Single and either **Vouch** or **Veto** all logged to the vouch history table visible on both dashboards.
 
 ---
 
@@ -143,19 +142,17 @@ Once linked, **Singles** land on a dashboard showing their own profile, their Ma
 
 ### Ideation
 
-Dating apps typically rely on algorithmic matching or cold swiping through strangers. Vouch flips that model: it treats a trusted friend's judgment as the filter, formalising the age-old practice of asking a mate to vet your dates — but with a proper interface, tracked history, and shared visibility between both parties.
+Dating apps typically rely on algorithmic matching or cold swiping through strangers. Vouch flips that model, it treats a trusted friend's judgment as the filter, formalising the age old practice of asking a friend to vet your dates, but with a proper interface, tracked history and shared visibility between both parties.
+
+[Planning Document](https://drive.google.com/file/d/1OX6P4GUx8lOGQBCbQyEWwhgOuO6wPkC7/view?usp=sharing)
 
 ### Figma File
 
-Want to view our wireframes? [Figma Document](#) *(add your Figma link here)*
+Want to view my wireframes? [Figma Document](https://www.figma.com/design/Fm0n3g1jnpOEoExkRdxxnZ/DV-200-Term-3?node-id=26-2&t=9qVzwx5GEMlkGORi-1)
 
 ---
 
 ## Future Implementation
-
-### Real-Time Notifications
-
-Replacing the current placeholder `alert()` calls (Nudge, Ping, Vouch, Veto) with a proper real-time notification system — likely via WebSockets or polling — so Singles and Matchmakers are notified the moment the other takes action, without needing to refresh.
 
 ### In-App Messaging
 
