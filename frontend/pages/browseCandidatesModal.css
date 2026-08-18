@@ -256,3 +256,39 @@
     color: #434343;
     margin-top: 4px;
 }
+
+/* Responsiveness */
+@media (max-width: 800px) {
+    .modalOverlay {
+        padding: 12px;
+    }
+
+    .modalOuterContainer {
+        height: auto;
+        max-height: 92vh;
+        padding: 10px;
+    }
+
+    .modalCard {
+        flex-direction: column;
+        height: auto;
+        max-height: 92vh;
+        overflow-y: auto;
+        gap: 16px;
+    }
+
+    .modalPhotoSide {
+        flex: none;
+        width: 100%;
+        height: 260px;
+    }
+
+    .modalDetailsSide {
+        padding-right: 0;
+    }
+
+    .modalCloseBtn {
+        top: 48px;
+        right: 16px;
+    }
+}
