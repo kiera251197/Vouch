@@ -25,15 +25,21 @@ body {
     margin: 0;
     font-family: var(--fontBody);
     color: var(--night);
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sunkissed) var(--blossom);
 }
 
 .dashboardBody {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    padding: 40px 20px;
+    min-height: 100vh;
+    padding: 40px 20px !important;
     background: url(../assets/images/orangeBG.jpg);
     background-position: center;
     background-size: cover;
@@ -60,6 +66,8 @@ body {
 
 #mySingleCard { 
     grid-column: 1; 
+    align-items: center;
+    text-align: center;
 }
 
 #myProfileCard {

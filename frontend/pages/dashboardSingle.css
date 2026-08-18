@@ -29,6 +29,11 @@ body {
     overflow-x: hidden;
 }
 
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--petal) var(--blossom);
+}
+
 .dashboardBody {
     display: flex;
     justify-content: center;
