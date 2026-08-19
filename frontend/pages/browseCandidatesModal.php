@@ -114,6 +114,7 @@
 </div>
 
 <script>
+    const candidateColourPool = ['#8E1353', '#D95205', '#F28806', '#F2B94B', '#F26D6D', '#DE6993', '#E0C1C9'];
     let pendingCandidates = <?= json_encode($pendingCandidates) ?>;
     let candidateIndex = 0;
 
@@ -179,7 +180,7 @@
             photoEl.style.backgroundPosition = 'center';
         } else {
             photoEl.style.backgroundImage = 'none';
-            photoEl.style.backgroundColor = candidateColorPool[candidateIndex % candidateColorPool.length];
+            photoEl.style.backgroundColor = candidateColourPool[candidateIndex % candidateColourPool.length];
         }
 
         document.getElementById('candidateProgressText').textContent = `${candidateIndex + 1} of ${total}`;

@@ -332,23 +332,22 @@ html {
     width: 100%;
 }
 
-#btnVeto {
+#dashBtnVeto {
     background: linear-gradient(90deg, var(--sunkissed) 0%, var(--dragonfruit) 100%);
 }
 
-#btnVeto:hover {
+#dashBtnVeto:hover {
     box-shadow: inset 20em 0 0 0 var(--citrus), inset -20em 0 0 0 var(--citrus);
 }
 
-#btnVouch {
+#dashBtnVouch {
     background: linear-gradient(90deg, var(--dragonfruit) 0%, var(--sunkissed) 100%);
 }
 
-#btnVouch:hover {
+#dashBtnVouch:hover {
     box-shadow: inset 20em 0 0 0 var(--petal), inset -20em 0 0 0 var(--petal);
 }
 
-    
 .submitBtn {
     width: 100%;
     padding: 16px;
@@ -506,7 +505,7 @@ html {
 }
 
 .logoutBtn:hover {
-    background: var(--dragonfruit);
+    background: var(--sunkissed);
     transform: translateY(-2px);
     box-shadow: 4px 4px 12px rgba(88, 0, 53, 0.476);
 }

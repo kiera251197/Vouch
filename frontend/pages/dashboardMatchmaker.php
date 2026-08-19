@@ -5,6 +5,7 @@ session_start();
 
 require_once __DIR__ . '/../../backend/config/database.php';
 require_once __DIR__ . '/../../backend/models/user.php';
+require_once __DIR__ . '/../../backend/models/vouching.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
@@ -52,18 +53,6 @@ $mySingle = [
 
 // Vouch History & Candidate Records
 $vouchHistory = [];
-$currentCandidate = [
-    'id' => null,
-    'name' => 'No Active Candidates',
-    'age' => '-',
-    'location' => '-',
-    'gender' => '-',
-    'occupation' => '-',
-    'hobbies' => '-',
-    'bio' => '-',
-    'lookingFor' => '-'
-];
-
 if ($singleUserId) {
     $vStmt = $db->prepare("
         SELECT p.user_id,
@@ -102,14 +91,26 @@ if ($singleUserId) {
         ];
     }
     $vStmt->close();
-
-    if (!empty($vouchHistory)) {
-        $currentCandidate = $vouchHistory[0];
-    }
 }
 
-$awaitingVouchCount = count(array_filter($vouchHistory, fn($v) => strtolower($v['status']) === 'pending'));
-$totalVetosCount   = count(array_filter($vouchHistory, fn($v) => strtolower($v['status']) === 'rejected' || strtolower($v['status']) === 'vetoed'));
+$pendingCandidates = [];
+if ($singleUserId) {
+    $vouchingModel = new Vouching($db);
+    $pendingCandidates = $vouchingModel->getPendingCandidates($singleUserId);
+}
+
+$currentCandidate = $pendingCandidates[0] ?? [
+    'id' => null,
+    'name' => 'No Active Candidates',
+    'age' => '-',
+    'location' => '-',
+    'gender' => '-',
+    'occupation' => '-',
+    'hobbies' => '-',
+    'bio' => '-',
+    'lookingFor' => '-'
+];
+
 ?>
 
 <!DOCTYPE html>
@@ -178,12 +179,12 @@ $totalVetosCount   = count(array_filter($vouchHistory, fn($v) => strtolower($v['
             <div class="dashCard" id="statsCard">
                 <div class="statsRow">
                     <div class="statBlock">
-                        <div class="statNumber statNumberOrange" id="awaitingVouchCount"><?= $awaitingVouchCount ?></div>
+                        <div class="statNumber statNumberOrange" id="awaitingVouchCount"><?= count($pendingCandidates) ?></div>
                         <div class="statLabel" style="color: var(--sunkissed);">AWAITING VOUCH</div>
                         <div class="statSub">Profiles waiting for you to review</div>
                     </div>
                     <div class="statBlock">
-                        <div class="statNumber statNumberPink" id="totalVetosCount"><?= $totalVetosCount ?></div>
+                        <div class="statNumber statNumberPink" id="totalVetosCount"><?= count(array_filter($vouchHistory, fn($v) => strtolower($v['status']) === 'veto' || strtolower($v['status']) === 'vetoed')) ?></div>
                         <div class="statLabel" style="color: var(--petal);">TOTAL VETOS</div>
                         <div class="statSub">Candidates that didn't quite meet the criteria</div>
                     </div>
@@ -251,12 +252,12 @@ $totalVetosCount   = count(array_filter($vouchHistory, fn($v) => strtolower($v['
             </div>
 
             <div class="actionBtnGroup">
-                <button type="button" class="submitBtn" id="btnVeto" onclick="vetoCandidate()">
+                <button type="button" class="submitBtn" id="dashBtnVeto" onclick="vetoCandidate()">
                     <img src="../assets/images/xIcon.png" alt="X icon" style="width: 14px; height: auto; margin-right: 8px;"> 
                     VETO
                 </button>
                 
-                <button type="button" class="submitBtn" id="btnVouch" onclick="vouchCandidate()">
+                <button type="button" class="submitBtn" id="dashBtnVouch" onclick="vouchCandidate()">
                     <img src="../assets/images/tickIcon.png" alt="Tick icon" style="width: 16px; height: auto; margin-right: 8px;"> 
                     VOUCH
                 </button>
