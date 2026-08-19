@@ -65,11 +65,11 @@ if (!empty($matchmakerData)) {
 
 $myMatchmaker = [
     'name' => $matchmakerData['full_name'] ?? 'Matchmaker',
-    'bio'  => $matchmakerData['bio'] ?? $matchmakerText,
+    'bio' => $matchmakerData['bio'] ?? $matchmakerText,
     'photo' => $matchmakerData['picture_url'] ?? null
 ];
 
-// 3. Vouch History
+// Vouch History
 $vouchHistory = [];
 $vStmt = $db->prepare("
     SELECT p.full_name, 
@@ -94,30 +94,30 @@ if ($vStmt) {
     $res = $vStmt->get_result();
     while ($row = $res->fetch_assoc()) {
         $vouchHistory[] = [
-            'name'       => $row['full_name'],
-            'photo'      => $row['picture_url'] ?? null,
-            'age'        => $row['age'] ?? '-',
-            'location'   => $row['location'] ?? '-',
-            'gender'     => $row['gender'] ?? '-',
+            'name' => $row['full_name'],
+            'photo' => $row['picture_url'] ?? null,
+            'age' => $row['age'] ?? '-',
+            'location' => $row['location'] ?? '-',
+            'gender' => $row['gender'] ?? '-',
             'occupation' => $row['occupation'] ?? '-',
-            'hobbies'    => $row['hobbies'] ?? '-',
-            'date'       => date('d.m.y', strtotime($row['timestamp'])),
-            'status'     => ucfirst($row['status']),
-            'note'       => $row['matchmaker_note'] ?? 'No note left.'
+            'hobbies' => $row['hobbies'] ?? '-',
+            'date' => date('d.m.y', strtotime($row['timestamp'])),
+            'status' => ucfirst($row['status']),
+            'note' => $row['matchmaker_note'] ?? 'No note left.'
         ];
     }
     $vStmt->close();
 }
 
 $recentVouch = $vouchHistory[0] ?? [
-    'name'       => 'Candidate',
-    'photo'      => null,
-    'age'        => '-',
-    'location'   => '-',
-    'gender'     => '-',
+    'name' => 'Candidate',
+    'photo' => null,
+    'age' => '-',
+    'location' => '-',
+    'gender' => '-',
     'occupation' => '-',
-    'hobbies'    => '-',
-    'note'       => 'Your matchmaker has not vouched for anyone yet.'
+    'hobbies' => '-',
+    'note' => 'Your matchmaker has not vouched for anyone yet.'
 ];
 
 $pendingVouchCount = count(array_filter($vouchHistory, fn($v) => strtolower($v['status']) === 'pending'));

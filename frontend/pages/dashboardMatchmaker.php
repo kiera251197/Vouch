@@ -26,8 +26,8 @@ $matchmakerData = $mStmt->get_result()->fetch_assoc();
 $mStmt->close();
 
 $myProfile = [
-    'name'  => $matchmakerData['full_name'] ?? $_SESSION['userName'] ?? 'Matchmaker',
-    'bio'   => $matchmakerData['bio'] ?? $matchmakerData['credentials'] ?? 'Filtering out the bad setups!',
+    'name' => $matchmakerData['full_name'] ?? $_SESSION['userName'] ?? 'Matchmaker',
+    'bio' => $matchmakerData['bio'] ?? $matchmakerData['credentials'] ?? 'Filtering out the bad setups!',
     'photo' => $matchmakerData['picture_url'] ?? null
 ];
 
@@ -45,21 +45,23 @@ $sStmt->close();
 
 $singleUserId = $singleData['user_id'] ?? null;
 $mySingle = [
-    'name'  => $singleData['full_name'] ?? 'No Single Linked',
-    'bio'   => $singleData['bio'] ?? 'Waiting for a Single to connect with your link code.',
+    'name' => $singleData['full_name'] ?? 'No Single Linked',
+    'bio' => $singleData['bio'] ?? 'Waiting for a Single to connect with your link code.',
     'photo' => $singleData['picture_url'] ?? null
 ];
 
 // Vouch History & Candidate Records
 $vouchHistory = [];
 $currentCandidate = [
-    'id'         => null,
-    'name'       => 'No Active Candidates',
-    'age'        => '-',
-    'location'   => '-',
-    'gender'     => '-',
+    'id' => null,
+    'name' => 'No Active Candidates',
+    'age' => '-',
+    'location' => '-',
+    'gender' => '-',
     'occupation' => '-',
-    'hobbies'    => '-'
+    'hobbies' => '-',
+    'bio' => '-',
+    'lookingFor' => '-'
 ];
 
 if ($singleUserId) {
@@ -87,21 +89,20 @@ if ($singleUserId) {
     while ($row = $res->fetch_assoc()) {
         $vouchHistory[] = [
             'candidate_id' => $row['user_id'],
-            'name'         => $row['full_name'],
-            'photo'        => $row['picture_url'] ?? null,
-            'age'          => $row['age'] ?? '-',
-            'location'     => $row['location'] ?? '-',
-            'gender'       => $row['gender'] ?? '-',
-            'occupation'   => $row['occupation'] ?? '-',
-            'hobbies'      => $row['hobbies'] ?? '-',
-            'date'         => date('d.m.y', strtotime($row['timestamp'])),
-            'status'       => ucfirst($row['status']),
-            'note'         => $row['matchmaker_note'] ?? 'No note left.'
+            'name' => $row['full_name'],
+            'photo' => $row['picture_url'] ?? null,
+            'age' => $row['age'] ?? '-',
+            'location' => $row['location'] ?? '-',
+            'gender' => $row['gender'] ?? '-',
+            'occupation' => $row['occupation'] ?? '-',
+            'hobbies' => $row['hobbies'] ?? '-',
+            'date' => date('d.m.y', strtotime($row['timestamp'])),
+            'status' => ucfirst($row['status']),
+            'note' => $row['matchmaker_note'] ?? 'No note left.'
         ];
     }
     $vStmt->close();
 
-    // Isolate the top candidate awaiting review, if any
     if (!empty($vouchHistory)) {
         $currentCandidate = $vouchHistory[0];
     }

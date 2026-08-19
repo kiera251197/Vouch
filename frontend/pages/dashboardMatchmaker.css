@@ -332,14 +332,22 @@ html {
     width: 100%;
 }
 
-
 #btnVeto {
     background: linear-gradient(90deg, var(--sunkissed) 0%, var(--dragonfruit) 100%);
+}
+
+#btnVeto:hover {
+    box-shadow: inset 20em 0 0 0 var(--citrus), inset -20em 0 0 0 var(--citrus);
 }
 
 #btnVouch {
     background: linear-gradient(90deg, var(--dragonfruit) 0%, var(--sunkissed) 100%);
 }
+
+#btnVouch:hover {
+    box-shadow: inset 20em 0 0 0 var(--petal), inset -20em 0 0 0 var(--petal);
+}
+
     
 .submitBtn {
     width: 100%;
@@ -356,12 +364,6 @@ html {
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.5s ease-in-out;
-}
-
-.submitBtn:hover {
-    box-shadow: inset 20em 0 0 0 var(--petal), inset -20em 0 0 0 var(--petal);
-    border-color: var(--petal);
-    color: #ffffff;
 }
 
 .actionBtnGroup {
