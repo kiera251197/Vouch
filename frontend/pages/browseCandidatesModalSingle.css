@@ -84,9 +84,9 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 35%;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, transparent 100%);
-    border-radius: 0 0 14px 14px;
+    height: 25%;
+    background: linear-gradient(to top, rgb(254, 254, 254) 0%, transparent 100%);
+    border-radius: 0 0 12px 12px;
 }
 
 .photoNavRow {
@@ -178,7 +178,6 @@
     line-height: 1.35;
 }
 
-/* Button Group Styling */
 .modalDetailsSide .actionBtnGroup {
     display: flex;
     gap: 14px;
@@ -199,7 +198,6 @@
     color: #ffffff;
     transition: opacity 0.2s ease;
 }
-
 
 .submitBtn {
     width: 100%;
@@ -224,12 +222,22 @@
     color: #ffffff;
 }
 
-#btnVeto {
-    background: linear-gradient(90deg, var(--sunkissed) 0%, var(--buttercup) 100%);
+#btnNextProfile {
+    background: linear-gradient(90deg, var(--sunkissed) 0%, var(--dragonfruit) 100%);
 }
 
-#btnVouch {
-    background: linear-gradient(90deg, var(--dragonfruit) 0%, var(--buttercup) 100%);
+#btnNextProfile:hover {
+    box-shadow: inset 20em 0 0 0 var(--citrus), inset -20em 0 0 0 var(--citrus);
+    border-color: var(--sunkissed);
+}
+
+#btnRequestVouch {
+    background: linear-gradient(90deg, var(--dragonfruit) 0%, var(--sunkissed) 100%);
+}
+
+#btnRequestVouch:hover {
+    box-shadow: inset 20em 0 0 0 var(--petal), inset -20em 0 0 0 var(--petal);
+    border-color: var(--sunkissed);
 }
 
 .modalProgressSection {

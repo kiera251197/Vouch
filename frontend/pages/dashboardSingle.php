@@ -1,11 +1,14 @@
 <?php
 ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-session_start();
-
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . '/../../backend/config/database.php';
 require_once __DIR__ . '/../../backend/models/user.php';
+require_once __DIR__ . '/../../backend/models/vouching.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
@@ -28,6 +31,9 @@ $myProfileData = $pStmt->get_result()->fetch_assoc();
 $pStmt->close();
 
 $actualUserId = $myProfileData['user_id'] ?? $currentProfileId;
+
+$vouchingModel = new Vouching($db);
+$matchingCandidates = $vouchingModel->getMatchingCandidatesForSingle($actualUserId);
 
 $myProfile = [
     'name' => $myProfileData['full_name'] ?? $_SESSION['userName'] ?? 'User',
@@ -117,6 +123,8 @@ $recentVouch = $vouchHistory[0] ?? [
     'gender' => '-',
     'occupation' => '-',
     'hobbies' => '-',
+    'bio' => '-',
+    'lookingFor' => '-',
     'note' => 'Your matchmaker has not vouched for anyone yet.'
 ];
 

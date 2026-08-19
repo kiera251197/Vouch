@@ -6,6 +6,127 @@ class Vouching {
         $this->db = $db;
     }
 
+    // Candidate fetching for the Single
+    public function getMatchingCandidatesForSingle(int $singleUserId): array {
+        $prefStmt = $this->db->prepare("
+            SELECT target_gender, target_ages 
+            FROM Singles_Preferences 
+            WHERE user_id = ?
+        ");
+        $prefStmt->bind_param("i", $singleUserId);
+        $prefStmt->execute();
+        $pref = $prefStmt->get_result()->fetch_assoc();
+        $prefStmt->close();
+
+        if (!$pref) {
+            return [];
+        }
+
+        $targetGender = $pref['target_gender'] ?? '';
+        $rawAges = $pref['target_ages'] ?? '';
+        
+        $minAge = 18;
+        $maxAge = 99;
+        if (preg_match('/(\d+)\s*-\s*(\d+)/', $rawAges, $matches)) {
+            $minAge = (int)$matches[1];
+            $maxAge = (int)$matches[2];
+        } elseif (strpos($rawAges, '56') !== false) {
+            $minAge = 56;
+            $maxAge = 99;
+        }
+
+        $query = "
+            SELECT 
+                p.user_id,
+                p.full_name,
+                p.picture_url,
+                p.location,
+                p.gender,
+                p.occupation,
+                p.hobbies,
+                p.bio,
+                p.hook,
+                TIMESTAMPDIFF(YEAR, STR_TO_DATE(p.birth_year, '%Y'), CURDATE()) AS age,
+                GROUP_CONCAT(ph.photo_url ORDER BY ph.photo_id ASC SEPARATOR ',') AS gallery_photos
+            FROM Profiles p
+            JOIN Users u ON u.user_id = p.user_id
+            LEFT JOIN Profile_Photos ph ON ph.user_id = p.user_id
+            WHERE p.user_id != ?
+            AND u.user_role = 'single'
+            AND (
+                LOWER(?) LIKE '%all sapphic%'
+                OR LOWER(p.gender) = LOWER(?)
+                OR (LOWER(?) = 'women' AND LOWER(p.gender) = 'woman')
+                OR (LOWER(?) = 'woman' AND LOWER(p.gender) = 'women')
+                OR (LOWER(?) LIKE '%trans%' AND LOWER(p.gender) LIKE '%trans%')
+                OR (LOWER(?) LIKE '%non-binary%' AND (LOWER(p.gender) LIKE '%non-binary%' OR LOWER(p.gender) LIKE '%enby%'))
+            )
+            AND TIMESTAMPDIFF(YEAR, STR_TO_DATE(p.birth_year, '%Y'), CURDATE()) BETWEEN ? AND ?
+            AND p.user_id NOT IN (
+                SELECT candidate_user_id 
+                FROM Vouching 
+                WHERE requesting_single_id = ?
+            )
+            GROUP BY p.user_id
+            ORDER BY RAND()
+            LIMIT 20
+        ";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param(
+            "issssssiii", 
+            $singleUserId, 
+            $targetGender, 
+            $targetGender, 
+            $targetGender, 
+            $targetGender, 
+            $targetGender, 
+            $targetGender, 
+            $minAge, 
+            $maxAge, 
+            $singleUserId
+        );
+        $stmt->execute();
+        $res = $stmt->get_result();
+
+        $candidates = [];
+        while ($row = $res->fetch_assoc()) {
+            $photos = [];
+            
+            if (!empty($row['picture_url'])) {
+                $photos[] = $row['picture_url'];
+            }
+            
+            if (!empty($row['gallery_photos'])) {
+                $galleryArr = explode(',', $row['gallery_photos']);
+                foreach ($galleryArr as $gPhoto) {
+                    $gPhoto = trim($gPhoto);
+                    if (!empty($gPhoto) && !in_array($gPhoto, $photos)) {
+                        $photos[] = $gPhoto;
+                    }
+                }
+            }
+
+            $candidates[] = [
+                'candidate_id' => $row['user_id'],
+                'name'        => $row['full_name'],
+                'photos'      => $photos,
+                'age'         => $row['age'] ?? '-',
+                'location'    => $row['location'] ?? '-',
+                'gender'      => $row['gender'] ?? '-',
+                'occupation'  => $row['occupation'] ?? '-',
+                'hobbies'     => $row['hobbies'] ?? '-',
+                'bio'         => $row['bio'] ?? 'No bio set yet.',
+                'lookingFor'  => $row['hook'] ?? 'Not specified.'
+            ];
+        }
+        $stmt->close();
+
+        return $candidates;
+    }
+
+
+
     // Retrieves candidate still awaiting for Matchmaker's review
     public function getPendingCandidates(int $singleUserId): array {
         $stmt = $this->db->prepare("
