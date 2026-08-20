@@ -208,41 +208,37 @@ $currentCandidate = $pendingCandidates[0] ?? [
             </div>
 
             <div class="recentVouchLayout">
-                <?php if (!empty($currentCandidate['photo'])): ?>
-                    <img src="<?= htmlspecialchars($currentCandidate['photo']) ?>" class="profileLarge" alt="Candidate Photo" style="object-fit: cover;">
-                <?php else: ?>
-                    <div class="profileLarge" style="background-color: var(--dragonfruit);"></div>
-                <?php endif; ?>
+                    <div class="profileLarge" id="candidatePhotoContainer" style="<?= !empty($currentCandidate['photo']) ? "background-image:url('" . htmlspecialchars($currentCandidate['photo']) . "');background-size:cover;background-position:center;" : "background-color: var(--dragonfruit);" ?>"></div>
 
                 <div class="recentVouchDetails">
                     <div class="detailRow">
                         <div class="detailCol">
                             <div class="detailLabel">NAME</div>
-                            <div class="detailValue"><?= htmlspecialchars($currentCandidate['name']) ?></div>
+                            <div class="detailValue" id="ccName"><?= htmlspecialchars($currentCandidate['name']) ?></div>
                         </div>
                         <div class="detailCol">
                             <div class="detailLabel">AGE</div>
-                            <div class="detailValue"><?= htmlspecialchars($currentCandidate['age']) ?></div>
+                            <div class="detailValue" id="ccAge"><?= htmlspecialchars($currentCandidate['age']) ?></div>
                         </div>
                     </div>
                     <div class="detailRow">
                         <div class="detailCol">
                             <div class="detailLabel">LOCATION</div>
-                            <div class="detailValue"><?= htmlspecialchars($currentCandidate['location']) ?></div>
+                            <div class="detailValue" id="ccLocation"><?= htmlspecialchars($currentCandidate['location']) ?></div>
                         </div>
                         <div class="detailCol">
                             <div class="detailLabel">GENDER</div>
-                            <div class="detailValue"><?= htmlspecialchars($currentCandidate['gender']) ?></div>
+                            <div class="detailValue" id="ccGender"><?= htmlspecialchars($currentCandidate['gender']) ?></div>
                         </div>
                     </div>
                     <div class="detailRow">
                         <div class="detailCol">
                             <div class="detailLabel">OCCUPATION</div>
-                            <div class="detailValue"><?= htmlspecialchars($currentCandidate['occupation']) ?></div>
+                            <div class="detailValue" id="ccOccupation"><?= htmlspecialchars($currentCandidate['occupation']) ?></div>
                         </div>
                         <div class="detailCol">
                             <div class="detailLabel">HOBBIES</div>
-                            <div class="detailValue"><?= htmlspecialchars($currentCandidate['hobbies']) ?></div>
+                            <div class="detailValue" id="ccHobbies"><?= htmlspecialchars($currentCandidate['hobbies']) ?></div>
                         </div>
                     </div>
 
@@ -324,6 +320,30 @@ $currentCandidate = $pendingCandidates[0] ?? [
     </div>
     
     <script>
+        function syncCandidateCard(c) {
+            document.getElementById('currentVouchingId').value = c.vouching_id;
+            document.getElementById('ccName').textContent = c.name;
+            document.getElementById('ccAge').textContent = c.age;
+            document.getElementById('ccLocation').textContent = c.location;
+            document.getElementById('ccGender').textContent = c.gender;
+            document.getElementById('ccOccupation').textContent = c.occupation;
+            document.getElementById('ccHobbies').textContent = c.hobbies;
+
+            const photoEl = document.getElementById('candidatePhotoContainer');
+            if (c.photo) {
+                photoEl.style.backgroundImage = `url('${c.photo}')`;
+                photoEl.style.backgroundSize = 'cover';
+                photoEl.style.backgroundPosition = 'center';
+            } else {
+                photoEl.style.backgroundImage = 'none';
+                photoEl.style.backgroundColor = 'var(--dragonfruit)';
+            }
+
+            document.getElementById('matchmakerNoteInput').value = '';
+            document.getElementById('dashBtnVeto').disabled = false;
+            document.getElementById('dashBtnVouch').disabled = false;
+        }
+
         function vetoCandidate() {
             reviewCandidateFromDashboard('veto');
         }

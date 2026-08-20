@@ -142,11 +142,35 @@
 
     function closeCustomAlert() {
         document.getElementById('customAlertOverlay').classList.remove('active');
+        if (window.focusNoteAfterAlert) {
+            window.focusNoteAfterAlert = false;
+            
+            const noteInput = document.getElementById('matchmakerNoteInput');
+            if (noteInput) {
+                noteInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                noteInput.focus();
+            }
+        }
+    }
+
+    function reviewCurrentCandidate(action) {
+        if (!pendingCandidates.length) return;
+        const c = pendingCandidates[candidateIndex];
+
+        // Load this exact candidate into the dashboard card so the note applies to them
+        if (typeof syncCandidateCard === 'function') {
+            syncCandidateCard(c);
+        }
+
+        closeCandidateModal();
+        window.focusNoteAfterAlert = true;
+        showAlert(`Leave a reason regarding your choice with ${c.name} first, then hit ${action === 'vouch' ? 'Vouch' : 'Veto'} in the Message field.`, 'WRITE A NOTE FIRST');
     }
 
     function openCandidateModal() {
         candidateIndex = 0;
         photoIndex = 0;
+
         renderCandidate();
         document.getElementById('candidateModalOverlay').classList.add('active');
     }

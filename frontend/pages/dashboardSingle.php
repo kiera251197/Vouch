@@ -303,6 +303,7 @@ $waitingOnThemCount = count(array_filter($vouchHistory, fn($v) => strtolower($v[
                                 </td>
                             </tr>
                         <?php else: ?>
+                            <tr>
                             <?php foreach ($vouchHistory as $row): ?>
                                <td class="historyNameCell">
                                     <?php if (!empty($row['photo'])): ?>
@@ -331,6 +332,7 @@ $waitingOnThemCount = count(array_filter($vouchHistory, fn($v) => strtolower($v[
                                         </div>
                                     </div>
                                 </td>
+                            <tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </tbody>
@@ -346,7 +348,7 @@ $waitingOnThemCount = count(array_filter($vouchHistory, fn($v) => strtolower($v[
         }
     
         function messageCandidate() {
-            showAlert(`Opening chat with <?= strtoupper(htmlspecialchars(explode(' ', $myMatchmaker['name'])[0])) ?>!`, 'NOTICE');
+            showAlert(`Opening chat with <?= strtoupper(htmlspecialchars(explode(' ', $recentVouch['name'])[0])) ?>!`, 'NOTICE');
         }
     </script>
 
