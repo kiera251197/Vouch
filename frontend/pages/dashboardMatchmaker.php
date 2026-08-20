@@ -100,7 +100,7 @@ if ($singleUserId) {
 }
 
 $currentCandidate = $pendingCandidates[0] ?? [
-    'id' => null,
+    'vouching_id' => null,
     'name' => 'No Active Candidates',
     'age' => '-',
     'location' => '-',
@@ -247,17 +247,19 @@ $currentCandidate = $pendingCandidates[0] ?? [
                     </div>
 
                     <div class="matchmakerNoteLabel">MESSAGE TO <?= strtoupper(htmlspecialchars(explode(' ', $mySingle['name'])[0])) ?></div>
+                    
+                    <input type="hidden" id="currentVouchingId" value="<?= htmlspecialchars($currentCandidate['vouching_id'] ?? '') ?>">
                     <input type="text" class="matchmakerInput" placeholder="Leave a message for <?= strtoupper(htmlspecialchars(explode(' ', $mySingle['name'])[0])) ?>..." id="matchmakerNoteInput">
                 </div>
             </div>
 
             <div class="actionBtnGroup">
-                <button type="button" class="submitBtn" id="dashBtnVeto" onclick="vetoCandidate()">
+                <button type="button" class="submitBtn" id="dashBtnVeto" onclick="vetoCandidate()" <?= empty($currentCandidate['vouching_id']) ? 'disabled' : '' ?>>
                     <img src="../assets/images/xIcon.png" alt="X icon" style="width: 14px; height: auto; margin-right: 8px;"> 
                     VETO
                 </button>
                 
-                <button type="button" class="submitBtn" id="dashBtnVouch" onclick="vouchCandidate()">
+                <button type="button" class="submitBtn" id="dashBtnVouch" onclick="vouchCandidate()" <?= empty($currentCandidate['vouching_id']) ? 'disabled' : '' ?>>
                     <img src="../assets/images/tickIcon.png" alt="Tick icon" style="width: 16px; height: auto; margin-right: 8px;"> 
                     VOUCH
                 </button>
@@ -322,16 +324,41 @@ $currentCandidate = $pendingCandidates[0] ?? [
     </div>
     
     <script>
-        function pingSingle() {
-            alert("Ping sent to Jane!");
-        }
-    
         function vetoCandidate() {
-            alert("Candidate Vetoed.");
+            reviewCandidateFromDashboard('veto');
         }
 
         function vouchCandidate() {
-            alert("Candidate Vouched!");
+            reviewCandidateFromDashboard('vouch');
+        }
+
+        function reviewCandidateFromDashboard(action) {
+            const vouchingId = document.getElementById('currentVouchingId').value;
+            if (!vouchingId) return;
+
+            const note = document.getElementById('matchmakerNoteInput').value.trim();
+
+            const formData = new FormData();
+            formData.append('vouching_id', vouchingId);
+            formData.append('action', action);
+            formData.append('note', note);
+
+            fetch('../../backend/routes/vouchAction.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Something went wrong saving that decision. Please try again.');
+                }
+            })
+            .catch(err => {
+                console.error('Error reviewing candidate:', err);
+                alert('Network error, please try again.');
+            });
         }
     </script>
 

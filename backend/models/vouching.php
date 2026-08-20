@@ -127,22 +127,82 @@ class Vouching {
 
 
 
+    
+
+    // Creates a new pending vouch request from a Single, tied to both Matchmakers involved
+    public function requestVouch(int $singleUserId, int $candidateUserId): array {
+        $check = $this->db->prepare("
+            SELECT vouching_id FROM Vouching 
+            WHERE requesting_single_id = ? AND candidate_user_id = ?
+        ");
+        $check->bind_param("ii", $singleUserId, $candidateUserId);
+        $check->execute();
+        if ($check->get_result()->fetch_assoc()) {
+            $check->close();
+            return ['error' => 'You already requested a vouch for this candidate.'];
+        }
+        $check->close();
+
+        // sender_matchmaker_id: the requesting Single's own Matchmaker — they're the one who'll actually review this
+        $senderStmt = $this->db->prepare("
+            SELECT matchmaker_user_id FROM Account_Linking 
+            WHERE single_user_id = ? AND matchmaker_user_id IS NOT NULL
+        ");
+        $senderStmt->bind_param("i", $singleUserId);
+        $senderStmt->execute();
+        $senderRow = $senderStmt->get_result()->fetch_assoc();
+        $senderStmt->close();
+
+        if (!$senderRow) {
+            return ['error' => "You don't have a Matchmaker linked yet."];
+        }
+        $senderMatchmakerId = (int)$senderRow['matchmaker_user_id'];
+
+        // reciever_matchmaker_id: the candidate's own Matchmaker, if they have one linked
+        $receiverStmt = $this->db->prepare("
+            SELECT matchmaker_user_id FROM Account_Linking 
+            WHERE single_user_id = ? AND matchmaker_user_id IS NOT NULL
+        ");
+        $receiverStmt->bind_param("i", $candidateUserId);
+        $receiverStmt->execute();
+        $receiverRow = $receiverStmt->get_result()->fetch_assoc();
+        $receiverStmt->close();
+        $receiverMatchmakerId = $receiverRow ? (int)$receiverRow['matchmaker_user_id'] : null;
+
+        $stmt = $this->db->prepare("
+            INSERT INTO Vouching (sender_matchmaker_id, reciever_matchmaker_id, requesting_single_id, candidate_user_id, status)
+            VALUES (?, ?, ?, ?, 'pending')
+        ");
+        $stmt->bind_param("iiii", $senderMatchmakerId, $receiverMatchmakerId, $singleUserId, $candidateUserId);
+        $success = $stmt->execute();
+        $stmt->close();
+
+        return $success ? ['success' => true] : ['error' => 'Something went wrong saving your request.'];
+    }
+
+
+
+
+
     // Retrieves candidate still awaiting for Matchmaker's review
     public function getPendingCandidates(int $singleUserId): array {
         $stmt = $this->db->prepare("
             SELECT v.vouching_id,
-                   p.full_name,
-                   p.picture_url,
-                   p.location,
-                   p.gender,
-                   p.occupation,
-                   p.hobbies,
-                   p.bio,
-                   p.hook,
-                   (YEAR(CURDATE()) - CAST(p.birth_year AS UNSIGNED)) AS age
+                p.full_name,
+                p.picture_url,
+                p.location,
+                p.gender,
+                p.occupation,
+                p.hobbies,
+                p.bio,
+                p.hook,
+                (YEAR(CURDATE()) - CAST(p.birth_year AS UNSIGNED)) AS age,
+                GROUP_CONCAT(ph.photo_url ORDER BY ph.photo_id ASC SEPARATOR ',') AS gallery_photos
             FROM Vouching v
             JOIN Profiles p ON v.candidate_user_id = p.user_id
+            LEFT JOIN Profile_Photos ph ON ph.user_id = p.user_id
             WHERE v.requesting_single_id = ? AND v.status = 'pending'
+            GROUP BY v.vouching_id
             ORDER BY v.timestamp ASC
         ");
         $stmt->bind_param("i", $singleUserId);
@@ -151,10 +211,27 @@ class Vouching {
 
         $candidates = [];
         while ($row = $res->fetch_assoc()) {
+            $photos = [];
+
+            if (!empty($row['picture_url'])) {
+                $photos[] = $row['picture_url'];
+            }
+
+            if (!empty($row['gallery_photos'])) {
+                $galleryArr = explode(',', $row['gallery_photos']);
+                foreach ($galleryArr as $gPhoto) {
+                    $gPhoto = trim($gPhoto);
+                    if (!empty($gPhoto) && !in_array($gPhoto, $photos)) {
+                        $photos[] = $gPhoto;
+                    }
+                }
+            }
+
             $candidates[] = [
                 'vouching_id' => $row['vouching_id'],
                 'name' => $row['full_name'],
                 'photo' => $row['picture_url'] ?? null,
+                'photos' => $photos,
                 'age' => $row['age'] ?? '-',
                 'location' => $row['location'] ?? '-',
                 'gender' => $row['gender'] ?? '-',
@@ -167,6 +244,12 @@ class Vouching {
         $stmt->close();
         return $candidates;
     }
+   
+
+
+
+
+
 
     // Records a matchmaker's Vouch or Veto decision on a candidate
     public function reviewCandidate(int $vouchingId, int $matchmakerUserId, string $status, ?string $note): bool {

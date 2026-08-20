@@ -2,19 +2,34 @@
     $pendingCandidates = $pendingCandidates ?? [];
 ?>
 
-<div class="modalOverlay" id="customAlertOverlay" style="z-index: 10000;">
-    <div class="modalOuterContainer" style="max-width: 400px; width: 90%;">
-        <div class="modalCard" style="flex-direction: column; padding: 24px; text-align: center;">
-            <div class="cardTitle" style="margin-bottom: 12px;" id="customAlertTitle">NOTICE</div>
-            <p id="customAlertMessage" style="font-size: 14px; margin-bottom: 20px; color: #333;"></p>
+<!-- Vouch Alert Modal -->
+<div class="modalOverlayMini" id="customAlertOverlay" style="z-index: 10000;">
+    <div class="modalOuterContainerMini">
+        <div class="modalCardMini">
+            <div class="cardTitleMini" id="customAlertTitle">
+                NOTICE
+            </div>
+
+            <p id="customAlertMessageMini"></p>
+
             <button type="button" class="submitBtn" onclick="closeCustomAlert()" style="align-self: center; min-width: 100px;">
-                OK
+
+                <div class="btnIcon">
+                    <img src="../assets/images/whiteLogoL.png" alt="Vouch Icon" class="vouchSmIcon" style="width: 12px; height: auto; margin-right: 8px;">
+                </div>
+
+                Noted
+
+                <div class="btnIcon">
+                    <img src="../assets/images/whiteLogoR.png" alt="Vouch Icon" class="vouchSmIcon" style="width: 12px; height: auto; margin-right: 8px;">
+                </div>
+
             </button>
         </div>
     </div>
 </div>
 
-
+<!-- Main Candidates Modal -->
 <div class="modalOverlay" id="candidateModalOverlay">
     <div class="modalOuterContainer">
         <div class="modalCard">
@@ -117,10 +132,11 @@
     const candidateColourPool = ['#8E1353', '#D95205', '#F28806', '#F2B94B', '#F26D6D', '#DE6993', '#E0C1C9'];
     let pendingCandidates = <?= json_encode($pendingCandidates) ?>;
     let candidateIndex = 0;
+    let photoIndex = 0;
 
     function showAlert(message, title = 'NOTICE') {
         document.getElementById('customAlertTitle').textContent = title;
-        document.getElementById('customAlertMessage').textContent = message;
+        document.getElementById('customAlertMessageMini').textContent = message;
         document.getElementById('customAlertOverlay').classList.add('active');
     }
 
@@ -130,6 +146,7 @@
 
     function openCandidateModal() {
         candidateIndex = 0;
+        photoIndex = 0;
         renderCandidate();
         document.getElementById('candidateModalOverlay').classList.add('active');
     }
@@ -139,7 +156,6 @@
     }
 
     function renderCandidate() {
-        const photoEl = document.getElementById('candidateModalPhoto');
         const total = pendingCandidates.length;
 
         if (total === 0) {
@@ -153,6 +169,7 @@
             document.getElementById('mcLookingFor').textContent = '-';
             document.getElementById('candidateProgressText').textContent = '0 of 0';
             document.getElementById('candidateProgressFill').style.width = '0%';
+            const photoEl = document.getElementById('candidateModalPhoto');
             photoEl.style.backgroundImage = 'none';
             photoEl.style.backgroundColor = 'var(--blossom)';
             document.getElementById('btnVeto').disabled = true;
@@ -174,65 +191,42 @@
         document.getElementById('mcBio').textContent = c.bio;
         document.getElementById('mcLookingFor').textContent = c.lookingFor;
 
-        if (c.photo) {
-            photoEl.style.backgroundImage = `url('${c.photo}')`;
+        document.getElementById('candidateProgressText').textContent = `${candidateIndex + 1} of ${total}`;
+        document.getElementById('candidateProgressFill').style.width = `${((candidateIndex + 1) / total) * 100}%`;
+
+        renderCandidatePhoto();
+    }
+
+    function renderCandidatePhoto() {
+        const photoEl = document.getElementById('candidateModalPhoto');
+        const c = pendingCandidates[candidateIndex];
+
+        if (c && c.photos && c.photos.length > 0) {
+            const currentImg = c.photos[photoIndex] || c.photos[0];
+            photoEl.style.backgroundImage = `url('${currentImg}')`;
             photoEl.style.backgroundSize = 'cover';
             photoEl.style.backgroundPosition = 'center';
         } else {
             photoEl.style.backgroundImage = 'none';
             photoEl.style.backgroundColor = candidateColourPool[candidateIndex % candidateColourPool.length];
         }
-
-        document.getElementById('candidateProgressText').textContent = `${candidateIndex + 1} of ${total}`;
-        document.getElementById('candidateProgressFill').style.width = `${((candidateIndex + 1) / total) * 100}%`;
     }
 
     function nextCandidatePhoto() {
-        if (pendingCandidates.length === 0) return;
-        candidateIndex = (candidateIndex + 1) % pendingCandidates.length;
-        renderCandidate();
+        if (!pendingCandidates.length) return;
+        const c = pendingCandidates[candidateIndex];
+        if (c && c.photos && c.photos.length > 1) {
+            photoIndex = (photoIndex + 1) % c.photos.length;
+            renderCandidatePhoto();
+        }
     }
 
     function prevCandidatePhoto() {
-        if (pendingCandidates.length === 0) return;
-        candidateIndex = (candidateIndex - 1 + pendingCandidates.length) % pendingCandidates.length;
-        renderCandidate();
-    }
-
-    function reviewCurrentCandidate(action) {
-        if (pendingCandidates.length === 0) return;
-
+        if (!pendingCandidates.length) return;
         const c = pendingCandidates[candidateIndex];
-        const formData = new FormData();
-        formData.append('vouching_id', c.vouching_id);
-        formData.append('action', action);
-
-        fetch('../../backend/routes/vouchAction.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                pendingCandidates.splice(candidateIndex, 1);
-                if (candidateIndex >= pendingCandidates.length) {
-                    candidateIndex = 0;
-                }
-                if (pendingCandidates.length === 0) {
-                    renderCandidate();
-                    closeCandidateModal();
-                    location.reload();
-                } else {
-                    renderCandidate();
-                }
-            } else {
-                showAlert('Something went wrong saving that decision. Please try again', 'ERROR');
-            }
-        })
-        .catch(err => {
-            console.error('Error reviewing candidate:', err);
-            showAlert('Network error please try again.', 'CONNECTION ERROR');
-        });
+        if (c && c.photos && c.photos.length > 1) {
+            photoIndex = (photoIndex - 1 + c.photos.length) % c.photos.length;
+            renderCandidatePhoto();
+        }
     }
-
 </script>

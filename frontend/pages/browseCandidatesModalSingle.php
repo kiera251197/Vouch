@@ -248,6 +248,28 @@
     function requestVouch() {
         if (!matchingCandidates || !matchingCandidates.length) return;
         const c = matchingCandidates[candidateIndex];
-        showAlert(`Vouch requested for ${c.name || 'Candidate'}!`, 'SUCCESS');
+
+        const formData = new FormData();
+        formData.append('candidate_user_id', c.candidate_id);
+
+        fetch('../../backend/routes/requestVouch.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(`Vouch requested for ${c.name || 'Candidate'}!`, 'SUCCESS');
+                matchingCandidates.splice(candidateIndex, 1);
+                if (candidateIndex >= matchingCandidates.length) candidateIndex = 0;
+                renderCandidate();
+            } else {
+                showAlert(data.error || 'Something went wrong, please try again.', 'ERROR');
+            }
+        })
+        .catch(err => {
+            console.error('Error requesting vouch:', err);
+            showAlert('Network error, please try again.', 'CONNECTION ERROR');
+        });
     }
 </script>
