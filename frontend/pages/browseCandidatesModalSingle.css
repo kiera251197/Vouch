@@ -79,6 +79,57 @@
     transition: background-color 0.3s ease;
 }
 
+.modalOverlayMini {
+    display: none; 
+    position: fixed;
+    padding: 12px;
+    border-radius: 24px;
+    box-shadow: 0px 16px 36px rgba(0, 0, 0, 0.35);
+    box-sizing: border-box;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.modalOverlayMini.active {
+    display: flex !important; 
+}
+
+.modalOuterContainerMini{
+    max-width: 400px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(242, 136, 6, 0.5) 100%);
+    padding: 14px;
+    border-radius: 24px;
+    width: 90%;
+    height: auto;
+    max-height: none;
+}
+
+.modalCardMini {
+    flex-direction: column;
+    padding: 24px;
+    text-align: center;
+    box-sizing: border-box;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 16px;
+}
+
+.cardTitleMini {
+    margin-bottom: 16px;
+}
+
+#customAlertMessageMini {
+    font-size: 16px;
+    margin-bottom: 24px;
+    color: var(--dragonfruit);
+}
+
 .photoGradientOverlay {
     position: absolute;
     bottom: 0;

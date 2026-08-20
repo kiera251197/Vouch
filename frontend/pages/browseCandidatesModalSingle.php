@@ -4,18 +4,34 @@
     $singlePhotoColours = $singlePhotoColours ?? ['#8E1353', '#D95205', '#F28806', '#F2B94B', '#F26D6D', '#DE6993', '#E0C1C9'];
 ?>
 
-<div class="modalOverlay" id="customAlertOverlay" style="z-index: 10000;">
-    <div class="modalOuterContainer" style="max-width: 400px; width: 90%;">
-        <div class="modalCard" style="flex-direction: column; padding: 24px; text-align: center;">
-            <div class="cardTitle" style="margin-bottom: 12px;" id="customAlertTitle">NOTICE</div>
-            <p id="customAlertMessage" style="font-size: 14px; margin-bottom: 20px; color: #333;"></p>
+<!-- Vouch Alert Modal -->
+<div class="modalOverlayMini" id="customAlertOverlay" style="z-index: 10000;">
+    <div class="modalOuterContainerMini">
+        <div class="modalCardMini">
+            <div class="cardTitleMini" id="customAlertTitle">
+                NOTICE
+            </div>
+
+            <p id="customAlertMessageMini"></p>
+
             <button type="button" class="submitBtn" onclick="closeCustomAlert()" style="align-self: center; min-width: 100px;">
-                OK
+
+                <div class="btnIcon">
+                    <img src="../assets/images/whiteLogoL.png" alt="Vouch Icon" class="vouchSmIcon" style="width: 12px; height: auto; margin-right: 8px;">
+                </div>
+
+                Noted
+
+                <div class="btnIcon">
+                    <img src="../assets/images/whiteLogoR.png" alt="Vouch Icon" class="vouchSmIcon" style="width: 12px; height: auto; margin-right: 8px;">
+                </div>
+
             </button>
         </div>
     </div>
 </div>
 
+<!-- Main Candidates Modal -->
 <div class="modalOverlay" id="curatedModalOverlay">
     <div class="modalOuterContainer">
         <div class="modalCard">
@@ -28,7 +44,7 @@
             <div class="modalPhotoSide" style="position: relative;">
                 <div class="modalPhotoFiller" id="curatedModalPhoto">
                     <div class="photoGradientOverlay"></div>
-                </div>
+
                     <div class="photoNavRow">
                         <button type="button" class="photoNavBtn" onclick="prevCuratedPhoto()">
                             <img src="../assets/images/arrowIcon.png" alt="Arrow Icon" class="arrowIcon" style="width: 24px; height: auto; margin-right: 8px;">
@@ -39,6 +55,7 @@
                             <img src="../assets/images/arrowIcon.png" alt="Arrow Icon" class="arrowIcon" style="transform: rotate(180deg); width: 24px; height: auto; margin-left: 8px;">
                         </button>
                     </div>
+                </div>
             </div>
 
             <!-- Details Side -->
@@ -104,7 +121,7 @@
                         </div>
                     </button>
                     
-                    <button type="button" class="submitBtn" id="btnRequestVouch" onclick="requestVouch(); closeCuratedModal();">
+                    <button type="button" class="submitBtn" id="btnRequestVouch" onclick="requestVouch();">
                         <div class="btnIcon">
                             <img src="../assets/images/whiteLogoL.png" alt="Vouch Icon" class="vouchSmIcon" style="width: 12px; height: auto; margin-right: 4px;">
                         </div> 
@@ -138,7 +155,7 @@
 
     function showAlert(message, title = 'NOTICE') {
         document.getElementById('customAlertTitle').textContent = title;
-        document.getElementById('customAlertMessage').textContent = message;
+        document.getElementById('customAlertMessageMini').textContent = message;
         document.getElementById('customAlertOverlay').classList.add('active');
     }
 
@@ -231,7 +248,6 @@
     function requestVouch() {
         if (!matchingCandidates || !matchingCandidates.length) return;
         const c = matchingCandidates[candidateIndex];
-        alert(`Vouch requested for ${c.name || 'Candidate'}!`);
-        closeCuratedModal();
+        showAlert(`Vouch requested for ${c.name || 'Candidate'}!`, 'SUCCESS');
     }
 </script>
