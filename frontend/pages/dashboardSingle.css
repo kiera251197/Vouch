@@ -11,6 +11,7 @@
     --night: #000000;
     --accepted: #138E25;
     --rejected: #AA0F0F;
+    --pending: #F28806;
 
     /* Typography */
     --fontPrimary: 'Urbanist', sans-serif;
@@ -409,6 +410,10 @@ html {
 
 .statusAccepted { 
     color: var(--accepted); 
+}
+
+.statusPending { 
+    color: var(--pending); 
 }
 
 .statusRejected { 

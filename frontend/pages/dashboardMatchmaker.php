@@ -332,6 +332,10 @@ $currentCandidate = $pendingCandidates[0] ?? [
             reviewCandidateFromDashboard('vouch');
         }
 
+        function pingSingle (){
+            showAlert(`Ping sent to <?= strtoupper(htmlspecialchars(explode(' ', $mySingle['name'])[0])) ?>!`, 'SENT');
+        }
+
         function reviewCandidateFromDashboard(action) {
             const vouchingId = document.getElementById('currentVouchingId').value;
             if (!vouchingId) return;

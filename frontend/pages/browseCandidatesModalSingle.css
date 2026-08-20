@@ -120,14 +120,18 @@
     border-radius: 16px;
 }
 
-.cardTitleMini {
-    margin-bottom: 16px;
+#customAlertTitle {
+    margin-bottom: 24px;
+    font-family: var(--fontPrimary);
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--sunkissed);
 }
 
 #customAlertMessageMini {
     font-size: 16px;
     margin-bottom: 24px;
-    color: var(--dragonfruit);
+    color: var(--night);
 }
 
 .photoGradientOverlay {

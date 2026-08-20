@@ -341,11 +341,12 @@ $waitingOnThemCount = count(array_filter($vouchHistory, fn($v) => strtolower($v[
     
     <script>
         function nudgeMatchmaker() {
-            alert("Nudge sent!");
+            showAlert(`Nudge sent to <?= strtoupper(htmlspecialchars(explode(' ', $myMatchmaker['name'])[0])) ?>!`, 'SENT');
+
         }
     
         function messageCandidate() {
-            alert("Opening chat...");
+            showAlert(`Opening chat with <?= strtoupper(htmlspecialchars(explode(' ', $myMatchmaker['name'])[0])) ?>!`, 'NOTICE');
         }
     </script>
 

@@ -102,14 +102,20 @@
     border-radius: 16px;
 }
 
-.cardTitleMini {
+#customAlertTitle {
     margin-bottom: 16px;
+    font-family: var(--fontPrimary);
+    font-weight: 600;
+    font-size: 24px;
+
 }
 
-#customAlertMessageMini {
-    font-size: 16px;
+#customAlertTitle {
     margin-bottom: 24px;
-    color: var(--dragonfruit);
+    font-family: var(--fontPrimary);
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--sunkissed);
 }
 
 .modalPhotoSide {

@@ -18,10 +18,10 @@
                     <img src="../assets/images/whiteLogoL.png" alt="Vouch Icon" class="vouchSmIcon" style="width: 12px; height: auto; margin-right: 8px;">
                 </div>
 
-                Noted
+                OKAY
 
                 <div class="btnIcon">
-                    <img src="../assets/images/whiteLogoR.png" alt="Vouch Icon" class="vouchSmIcon" style="width: 12px; height: auto; margin-right: 8px;">
+                    <img src="../assets/images/whiteLogoR.png" alt="Vouch Icon" class="vouchSmIcon" style="width: 12px; height: auto; margin-left: 8px;">
                 </div>
 
             </button>
