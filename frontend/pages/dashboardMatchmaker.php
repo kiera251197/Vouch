@@ -62,7 +62,7 @@ if ($singleUserId) {
                p.gender,
                p.occupation,
                p.hobbies,
-               TIMESTAMPDIFF(YEAR, STR_TO_DATE(p.birth_year, '%Y'), CURDATE()) as age,
+               (YEAR(CURDATE()) - CAST(birth_year AS UNSIGNED)) as age,
                v.timestamp,
                v.status,
                v.matchmaker_note

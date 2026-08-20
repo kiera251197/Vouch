@@ -46,7 +46,7 @@ class Vouching {
                 p.hobbies,
                 p.bio,
                 p.hook,
-                TIMESTAMPDIFF(YEAR, STR_TO_DATE(p.birth_year, '%Y'), CURDATE()) AS age,
+                (YEAR(CURDATE()) - CAST(p.birth_year AS UNSIGNED)) AS age,
                 GROUP_CONCAT(ph.photo_url ORDER BY ph.photo_id ASC SEPARATOR ',') AS gallery_photos
             FROM Profiles p
             JOIN Users u ON u.user_id = p.user_id
@@ -61,7 +61,7 @@ class Vouching {
                 OR (LOWER(?) LIKE '%trans%' AND LOWER(p.gender) LIKE '%trans%')
                 OR (LOWER(?) LIKE '%non-binary%' AND (LOWER(p.gender) LIKE '%non-binary%' OR LOWER(p.gender) LIKE '%enby%'))
             )
-            AND TIMESTAMPDIFF(YEAR, STR_TO_DATE(p.birth_year, '%Y'), CURDATE()) BETWEEN ? AND ?
+            AND (YEAR(CURDATE()) - CAST(p.birth_year AS UNSIGNED)) BETWEEN ? AND ?
             AND p.user_id NOT IN (
                 SELECT candidate_user_id 
                 FROM Vouching 
@@ -139,7 +139,7 @@ class Vouching {
                    p.hobbies,
                    p.bio,
                    p.hook,
-                   TIMESTAMPDIFF(YEAR, STR_TO_DATE(p.birth_year, '%Y'), CURDATE()) as age
+                   (YEAR(CURDATE()) - CAST(p.birth_year AS UNSIGNED)) AS age
             FROM Vouching v
             JOIN Profiles p ON v.candidate_user_id = p.user_id
             WHERE v.requesting_single_id = ? AND v.status = 'pending'

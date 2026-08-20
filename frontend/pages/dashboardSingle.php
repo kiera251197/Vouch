@@ -21,7 +21,7 @@ $currentProfileId = (int)$_SESSION['user_id'];
 // Single Profile
 $pStmt = $db->prepare("
     SELECT user_id, full_name, bio, picture_url, location, gender, occupation, hobbies,
-    TIMESTAMPDIFF(YEAR, STR_TO_DATE(birth_year, '%Y'), CURDATE()) as age 
+    (YEAR(CURDATE()) - CAST(birth_year AS UNSIGNED)) as age
     FROM Profiles 
     WHERE user_id = ?
 ");
@@ -84,7 +84,7 @@ $vStmt = $db->prepare("
            p.gender,
            p.occupation,
            p.hobbies,
-           TIMESTAMPDIFF(YEAR, STR_TO_DATE(p.birth_year, '%Y'), CURDATE()) as age, 
+           (YEAR(CURDATE()) - CAST(birth_year AS UNSIGNED)) as age,
            v.timestamp, 
            v.status, 
            v.matchmaker_note
@@ -223,50 +223,52 @@ $waitingOnThemCount = count(array_filter($vouchHistory, fn($v) => strtolower($v[
             <!-- Most Recent Vouch -->
             <div class="dashCard" id="mostRecentVouchCard">
                 <div class="cardTitle">MOST RECENT VOUCH</div>
-                <a href="javascript:void(0)" class="browseCandidatesBtn" onclick="openCuratedModal()"><img src="../assets/images/pinkLogo.png" alt="Browse Candidates"></a>
+                    <a href="javascript:void(0)" class="browseCandidatesBtn" onclick="openCuratedModal()">
+                        <img src="../assets/images/pinkLogo.png" alt="Browse Candidates">
+                    </a>
 
-                <div class="recentVouchLayout">
-                    <?php if (!empty($recentVouch['photo'])): ?>
-                        <img src="<?= htmlspecialchars($recentVouch['photo']) ?>" class="profileLarge" alt="Candidate" style="object-fit: cover;">
-                    <?php else: ?>
-                        <div class="profileLarge" style="background-color: var(--dragonfruit)"></div>
-                    <?php endif; ?>
-                    <div class="recentVouchDetails">
-                        <div class="detailRow">
-                            <div class="detailCol">
-                                <div class="detailLabel">NAME</div>
-                                <div class="detailValue"><?= htmlspecialchars($recentVouch['name']) ?></div>
+                    <div class="recentVouchLayout">
+                        <?php if (!empty($recentVouch['photo'])): ?>
+                            <img src="<?= htmlspecialchars($recentVouch['photo']) ?>" class="profileLarge" alt="Candidate" style="object-fit: cover;">
+                        <?php else: ?>
+                            <div class="profileLarge" style="background-color: var(--dragonfruit)"></div>
+                        <?php endif; ?>
+                        <div class="recentVouchDetails">
+                            <div class="detailRow">
+                                <div class="detailCol">
+                                    <div class="detailLabel">NAME</div>
+                                    <div class="detailValue"><?= htmlspecialchars($recentVouch['name']) ?></div>
+                                </div>
+                                <div class="detailCol">
+                                    <div class="detailLabel">AGE</div>
+                                    <div class="detailValue"><?= htmlspecialchars($recentVouch['age']) ?></div>
+                                </div>
                             </div>
-                            <div class="detailCol">
-                                <div class="detailLabel">AGE</div>
-                                <div class="detailValue"><?= htmlspecialchars($recentVouch['age']) ?></div>
+                            <div class="detailRow">
+                                <div class="detailCol">
+                                    <div class="detailLabel">LOCATION</div>
+                                    <div class="detailValue"><?= htmlspecialchars($recentVouch['location']) ?></div>
+                                </div>
+                                <div class="detailCol">
+                                    <div class="detailLabel">GENDER</div>
+                                    <div class="detailValue"><?= htmlspecialchars($recentVouch['gender']) ?></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="detailRow">
-                            <div class="detailCol">
-                                <div class="detailLabel">LOCATION</div>
-                                <div class="detailValue"><?= htmlspecialchars($recentVouch['location']) ?></div>
+                            <div class="detailRow">
+                                <div class="detailCol">
+                                    <div class="detailLabel">OCCUPATION</div>
+                                    <div class="detailValue"><?= htmlspecialchars($recentVouch['occupation']) ?></div>
+                                </div>
+                                <div class="detailCol">
+                                    <div class="detailLabel">HOBBIES</div>
+                                    <div class="detailValue"><?= htmlspecialchars($recentVouch['hobbies']) ?></div>
+                                </div>
                             </div>
-                            <div class="detailCol">
-                                <div class="detailLabel">GENDER</div>
-                                <div class="detailValue"><?= htmlspecialchars($recentVouch['gender']) ?></div>
-                            </div>
-                        </div>
-                        <div class="detailRow">
-                            <div class="detailCol">
-                                <div class="detailLabel">OCCUPATION</div>
-                                <div class="detailValue"><?= htmlspecialchars($recentVouch['occupation']) ?></div>
-                            </div>
-                            <div class="detailCol">
-                                <div class="detailLabel">HOBBIES</div>
-                                <div class="detailValue"><?= htmlspecialchars($recentVouch['hobbies']) ?></div>
-                            </div>
-                        </div>
 
-                        <div class="matchmakerNoteLabel"><?= strtoupper(htmlspecialchars(explode(' ', $myMatchmaker['name'])[0])) ?> SAYS...</div>
-                        <div class="detailValue"><?= htmlspecialchars($recentVouch['note']) ?></div>
+                            <div class="matchmakerNoteLabel"><?= strtoupper(htmlspecialchars(explode(' ', $myMatchmaker['name'])[0])) ?> SAYS...</div>
+                            <div class="detailValue"><?= htmlspecialchars($recentVouch['note']) ?></div>
+                        </div>
                     </div>
-                </div>
 
                 <div class="actionBtnGroup">
                     <button type="button" class="submitBtn" id="messageBtn" onclick="messageCandidate()">

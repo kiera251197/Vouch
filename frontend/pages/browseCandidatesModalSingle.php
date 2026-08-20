@@ -1,7 +1,7 @@
 <?php
     $matchingCandidates = $matchingCandidates ?? [];
 
-    $singlePhotoColors = $singlePhotoColors ?? ['#8E1353', '#D95205', '#F28806', '#F2B94B', '#F26D6D', '#DE6993', '#E0C1C9'];
+    $singlePhotoColours = $singlePhotoColours ?? ['#8E1353', '#D95205', '#F28806', '#F2B94B', '#F26D6D', '#DE6993', '#E0C1C9'];
 ?>
 
 <div class="modalOverlay" id="customAlertOverlay" style="z-index: 10000;">
@@ -131,8 +131,8 @@
 </div>
 
 <script>
-    const matchingCandidates = <?= json_encode(array_values($matchingCandidates)) ?>;
-    const singlePhotoColors = <?= json_encode($singlePhotoColors) ?>;
+    const matchingCandidates = <?= json_encode(array_values($matchingCandidates ?? [])) ?>;
+    const singlePhotoColours = <?= json_encode($singlePhotoColours ?? ['#8E1353', '#D95205', '#F28806', '#F2B94B', '#F26D6D', '#DE6993', '#E0C1C9']) ?>;
     let candidateIndex = 0;
     let photoIndex = 0;
 
@@ -161,24 +161,24 @@
         const hasCandidates = matchingCandidates && matchingCandidates.length > 0;
         const c = hasCandidates ? matchingCandidates[candidateIndex] : null;
 
-        document.getElementById('mcName').textContent = c ? (c.name || c.full_name || 'Candidate') : 'No Candidates Available';
-        document.getElementById('mcAge').textContent = c ? (c.age || '-') : '-';
-        document.getElementById('mcLocation').textContent = c ? (c.location || '-') : '-';
-        document.getElementById('mcGender').textContent = c ? (c.gender || '-') : '-';
-        document.getElementById('mcOccupation').textContent = c ? (c.occupation || '-') : '-';
-        document.getElementById('mcHobbies').textContent = c ? (c.hobbies || '-') : '-';
-        document.getElementById('mcBio').textContent = c ? (c.bio ? `"${c.bio}"` : '"No bio set."') : 'No candidates available right now.';
-        document.getElementById('mcLookingFor').textContent = c ? (c.lookingFor || c.looking_for ? `"${c.lookingFor || c.looking_for}"` : '"Not specified."') : '-';
+        document.getElementById('mcName').textContent = c ? c.name : 'No Candidates Available';
+        document.getElementById('mcAge').textContent = c ? c.age : '-';
+        document.getElementById('mcLocation').textContent = c ? c.location : '-';
+        document.getElementById('mcGender').textContent = c ? c.gender : '-';
+        document.getElementById('mcOccupation').textContent = c ? c.occupation : '-';
+        document.getElementById('mcHobbies').textContent = c ? c.hobbies : '-';
+        document.getElementById('mcBio').textContent = c ? `"${c.bio}"` : 'No bio set.';
+        document.getElementById('mcLookingFor').textContent = c ? `"${c.lookingFor}"` : 'Not specified.';
 
         const total = hasCandidates ? matchingCandidates.length : 0;
         const current = hasCandidates ? candidateIndex + 1 : 0;
         
-        const progressText = document.querySelector('.progressText');
+        const progressText = document.querySelector('#curatedModalOverlay .progressText');
         if (progressText) {
             progressText.textContent = `${current} of ${total}`;
         }
         
-        const fillEl = document.querySelector('.progressBarFill');
+        const fillEl = document.querySelector('#curatedModalOverlay .progressBarFill');
         if (fillEl) {
             fillEl.style.width = total > 0 ? `${(current / total) * 100}%` : '0%';
         }
@@ -190,22 +190,16 @@
         const photoEl = document.getElementById('curatedModalPhoto');
         if (!photoEl) return;
 
-        const hasCandidates = matchingCandidates && matchingCandidates.length > 0;
-        const c = hasCandidates ? matchingCandidates[candidateIndex] : null;
+        const c = matchingCandidates[candidateIndex];
 
         if (c && c.photos && c.photos.length > 0) {
             const currentImg = c.photos[photoIndex] || c.photos[0];
             photoEl.style.backgroundImage = `url('${currentImg}')`;
             photoEl.style.backgroundSize = 'cover';
             photoEl.style.backgroundPosition = 'center';
-        } else if (c && (c.photo || c.picture_url)) {
-            const currentImg = c.photo || c.picture_url;
-            photoEl.style.backgroundImage = `url('${currentImg}')`;
-            photoEl.style.backgroundSize = 'cover';
-            photoEl.style.backgroundPosition = 'center';
         } else {
             photoEl.style.backgroundImage = 'none';
-            photoEl.style.backgroundColor = singlePhotoColors[candidateIndex % singlePhotoColors.length];
+            photoEl.style.backgroundColor = singlePhotoColours[candidateIndex % singlePhotoColours.length];
         }
     }
 
