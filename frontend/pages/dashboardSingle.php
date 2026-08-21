@@ -84,13 +84,18 @@ $vStmt = $db->prepare("
            p.gender,
            p.occupation,
            p.hobbies,
+           p.bio,
+           p.hook,
            (YEAR(CURDATE()) - CAST(birth_year AS UNSIGNED)) as age,
            v.timestamp, 
            v.status, 
-           v.matchmaker_note
+           v.matchmaker_note,
+           GROUP_CONCAT(ph.photo_url ORDER BY ph.photo_id ASC SEPARATOR ',') AS gallery_photos
     FROM Vouching v
     JOIN Profiles p ON v.candidate_user_id = p.user_id
+    LEFT JOIN Profile_Photos ph ON ph.user_id = p.user_id
     WHERE v.requesting_single_id = ? OR v.requesting_single_id = ?
+    GROUP BY v.vouching_id
     ORDER BY v.timestamp DESC
 ");
 
@@ -99,14 +104,26 @@ if ($vStmt) {
     $vStmt->execute();
     $res = $vStmt->get_result();
     while ($row = $res->fetch_assoc()) {
+        $photos = [];
+        if (!empty($row['picture_url'])) $photos[] = $row['picture_url'];
+        if (!empty($row['gallery_photos'])) {
+            foreach (explode(',', $row['gallery_photos']) as $gPhoto) {
+                $gPhoto = trim($gPhoto);
+                if (!empty($gPhoto) && !in_array($gPhoto, $photos)) $photos[] = $gPhoto;
+            }
+        }
+
         $vouchHistory[] = [
             'name' => $row['full_name'],
             'photo' => $row['picture_url'] ?? null,
+            'photos' => $photos,
             'age' => $row['age'] ?? '-',
             'location' => $row['location'] ?? '-',
             'gender' => $row['gender'] ?? '-',
             'occupation' => $row['occupation'] ?? '-',
             'hobbies' => hobbyLabel($row['hobbies']),
+            'bio' => $row['bio'] ?? 'No bio set yet.',
+            'lookingFor' => $row['hook'] ?? 'Not specified.',
             'date' => date('d.m.y', strtotime($row['timestamp'])),
             'status' => ucfirst($row['status']),
             'note' => $row['matchmaker_note'] ?? 'No note left.'
@@ -303,36 +320,36 @@ $waitingOnThemCount = count(array_filter($vouchHistory, fn($v) => strtolower($v[
                                 </td>
                             </tr>
                         <?php else: ?>
-                            <tr>
-                            <?php foreach ($vouchHistory as $row): ?>
-                               <td class="historyNameCell">
-                                    <?php if (!empty($row['photo'])): ?>
-                                        <img src="<?= htmlspecialchars($row['photo']) ?>" class="profileSmall" alt="Thumbnail" style="object-fit: cover; width: 28px; height: 28px; border-radius: 50%; vertical-align: middle; margin-right: 8px;">
-                                    <?php else: ?>
-                                        <span class="profileSmall" style="background-color: var(--sunkissed);"></span>
-                                    <?php endif; ?>
-                                    <?= htmlspecialchars($row['name']) ?>
-                                </td>
+                            <?php foreach ($vouchHistory as $index => $row): ?>
+                                <tr onclick="openHistoryProfileModal(<?= $index ?>)" style="cursor: pointer;">
+                                    <td class="historyNameCell">
+                                            <?php if (!empty($row['photo'])): ?>
+                                                <img src="<?= htmlspecialchars($row['photo']) ?>" class="profileSmall" alt="Thumbnail" style="object-fit: cover; width: 28px; height: 28px; border-radius: 50%; vertical-align: middle; margin-right: 8px;">
+                                            <?php else: ?>
+                                                <span class="profileSmall" style="background-color: var(--sunkissed);"></span>
+                                            <?php endif; ?>
+                                            <?= htmlspecialchars($row['name']) ?>
+                                        </td>
 
-                                <td>
-                                    <?= htmlspecialchars($row['age']) ?>
-                                </td>
+                                        <td>
+                                            <?= htmlspecialchars($row['age']) ?>
+                                        </td>
 
-                                <td>
-                                    <?= htmlspecialchars($row['date']) ?>
-                                </td>
+                                        <td>
+                                            <?= htmlspecialchars($row['date']) ?>
+                                        </td>
 
-                                <td class="statusCell">
-                                    <div class="statusInfoWrapper">
-                                        <span class="statusTag status<?= htmlspecialchars($row['status']) ?>">
-                                            <?= htmlspecialchars($row['status']) ?>
-                                        </span>
-                                        <div class="statusInfo">
-                                            <strong style="font-weight: 600;"><?= strtoupper(htmlspecialchars(explode(' ', $myMatchmaker['name'])[0])) ?> SAYS:</strong> "<?= htmlspecialchars($row['note']) ?>"
-                                        </div>
-                                    </div>
-                                </td>
-                            <tr>
+                                        <td class="statusCell">
+                                            <div class="statusInfoWrapper">
+                                                <span class="statusTag status<?= htmlspecialchars($row['status']) ?>">
+                                                    <?= htmlspecialchars($row['status']) ?>
+                                                </span>
+                                                <div class="statusInfo">
+                                                    <strong style="font-weight: 600;"><?= strtoupper(htmlspecialchars(explode(' ', $myMatchmaker['name'])[0])) ?> SAYS:</strong> "<?= htmlspecialchars($row['note']) ?>"
+                                                </div>
+                                            </div>
+                                        </td>
+                                    <tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </tbody>
@@ -350,8 +367,11 @@ $waitingOnThemCount = count(array_filter($vouchHistory, fn($v) => strtolower($v[
         function messageCandidate() {
             showAlert(`Opening chat with <?= strtoupper(htmlspecialchars(explode(' ', $recentVouch['name'])[0])) ?>!`, 'NOTICE');
         }
+
+        const vouchHistoryData = <?= json_encode(array_values($vouchHistory)) ?>;
     </script>
 
 <?php include 'browseCandidatesModalSingle.php'; ?>
+<?php include 'viewHistoryProfileModal.php'; ?>
 </body>
 </html>
