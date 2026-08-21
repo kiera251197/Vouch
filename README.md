@@ -169,13 +169,13 @@ Currently a Single links to one Matchmaker via a single unclaimed code. A natura
 ### Mockups
 
 #### Desktop
-Will be added soon...
+[Desktop Mockup](https://github.com/kiera251197/Vouch/blob/1b38d407eb48a4e5af95b8ae20756b2f012b558c/frontend/assets/githubImages/desktopVouchMockup.png)
 
 #### Tablet
-Will be added soon...
+[Tablet Mockup](https://github.com/kiera251197/Vouch/blob/1b38d407eb48a4e5af95b8ae20756b2f012b558c/frontend/assets/githubImages/tabletVouchMockup.png)
 
 #### Mobile
-Will be added soon...
+[Mobile Mockup](https://github.com/kiera251197/Vouch/blob/1b38d407eb48a4e5af95b8ae20756b2f012b558c/frontend/assets/githubImages/mobileVouchMockup.png)
 
 ### Demo Video
 
