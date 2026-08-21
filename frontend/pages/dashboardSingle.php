@@ -43,7 +43,7 @@ $myProfile = [
     'location' => $myProfileData['location'] ?? 'N/A',
     'gender' => $myProfileData['gender'] ?? 'N/A',
     'occupation' => $myProfileData['occupation'] ?? 'N/A',
-    'hobbies' => $myProfileData['hobbies'] ?? 'N/A'
+    'hobbies' => hobbyLabel($myProfileData['hobbies'] ?? null),
 ];
 
 // Matchmaker Profile
@@ -106,7 +106,7 @@ if ($vStmt) {
             'location' => $row['location'] ?? '-',
             'gender' => $row['gender'] ?? '-',
             'occupation' => $row['occupation'] ?? '-',
-            'hobbies' => $row['hobbies'] ?? '-',
+            'hobbies' => hobbyLabel($row['hobbies']),
             'date' => date('d.m.y', strtotime($row['timestamp'])),
             'status' => ucfirst($row['status']),
             'note' => $row['matchmaker_note'] ?? 'No note left.'

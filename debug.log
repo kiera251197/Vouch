@@ -31,3 +31,15 @@
 2026-08-21 11:55:57 review: reciever_matchmaker_id=56
 2026-08-21 11:55:57 forward: called with candidate=55 original=49
 2026-08-21 11:55:57 forward: INSERTING pending row, matchmaker=56
+2026-08-21 13:17:31 uploadFile: passed validation, calling Cloudinary
+2026-08-21 13:21:12 uploadFile: passed validation, calling Cloudinary
+2026-08-21 13:24:51 uploadFile: passed validation, calling Cloudinary
+2026-08-21 13:28:52 uploadFile: passed validation, calling Cloudinary
+2026-08-21 13:33:26 uploadFile: passed validation, calling Cloudinary
+2026-08-21 13:35:25 uploadFile: passed validation, calling Cloudinary
+2026-08-21 13:39:02 uploadFile: passed validation, calling Cloudinary
+2026-08-21 13:41:09 uploadFile: passed validation, calling Cloudinary
+2026-08-21 13:44:58 review: reciever_matchmaker_id=54
+2026-08-21 13:44:58 forward: called with candidate=53 original=65
+2026-08-21 13:44:58 forward: INSERTING pending row, matchmaker=54
+2026-08-21 13:46:13 review: reciever_matchmaker_id=NULL

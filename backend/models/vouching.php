@@ -1,4 +1,23 @@
 <?php
+function hobbyLabel(?string $key): string {
+    static $labels = [
+        'art'       => 'Art & Creative',
+        'thrifting' => 'Thrifting & Vintage',
+        'plants'    => 'Plants & Gardening',
+        'outdoors'  => 'Hiking & Camping',
+        'reading'   => 'Reading & Bookstores',
+        'music'     => 'Music & Concerts',
+        'travel'    => 'Travel',
+        'fitness'   => 'Fitness & Sports',
+        'cooking'   => 'Cooking & Baking',
+        'gaming'    => 'Gaming',
+        'coffee'    => 'Coffee & Cafe Hopping',
+    ];
+
+    if (!$key) return '-';
+    return $labels[$key] ?? $key;
+}
+
 class Vouching {
     private mysqli $db;
 
@@ -115,7 +134,7 @@ class Vouching {
                 'location'    => $row['location'] ?? '-',
                 'gender'      => $row['gender'] ?? '-',
                 'occupation'  => $row['occupation'] ?? '-',
-                'hobbies'     => $row['hobbies'] ?? '-',
+                'hobbies'     => hobbyLabel($row['hobbies']),
                 'bio'         => $row['bio'] ?? 'No bio set yet.',
                 'lookingFor'  => $row['hook'] ?? 'Not specified.'
             ];
@@ -236,7 +255,7 @@ class Vouching {
                 'location' => $row['location'] ?? '-',
                 'gender' => $row['gender'] ?? '-',
                 'occupation' => $row['occupation'] ?? '-',
-                'hobbies' => $row['hobbies'] ?? '-',
+                'hobbies' => hobbyLabel($row['hobbies']),
                 'bio' => $row['bio'] ?? 'No bio set yet.',
                 'lookingFor' => $row['hook'] ?? 'Not specified.'
             ];

@@ -84,7 +84,7 @@ if ($singleUserId) {
             'location' => $row['location'] ?? '-',
             'gender' => $row['gender'] ?? '-',
             'occupation' => $row['occupation'] ?? '-',
-            'hobbies' => $row['hobbies'] ?? '-',
+            'hobbies' => hobbyLabel($row['hobbies']),
             'date' => date('d.m.y', strtotime($row['timestamp'])),
             'status' => ucfirst($row['status']),
             'note' => $row['matchmaker_note'] ?? 'No note left.'
