@@ -184,7 +184,7 @@ $currentCandidate = $pendingCandidates[0] ?? [
                         <div class="statSub">Profiles waiting for you to review</div>
                     </div>
                     <div class="statBlock">
-                        <div class="statNumber statNumberPink" id="totalVetosCount"><?= count(array_filter($vouchHistory, fn($v) => strtolower($v['status']) === 'veto' || strtolower($v['status']) === 'vetoed')) ?></div>
+                        <div class="statNumber statNumberPink" id="totalVetosCount"><?= count(array_filter($vouchHistory, fn($v) => strtolower($v['status']) === 'veto' || strtolower($v['status']) === 'rejected')) ?></div>
                         <div class="statLabel" style="color: var(--petal);">TOTAL VETOS</div>
                         <div class="statSub">Candidates that didn't quite meet the criteria</div>
                     </div>

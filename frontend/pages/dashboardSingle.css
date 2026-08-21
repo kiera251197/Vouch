@@ -11,7 +11,8 @@
     --night: #000000;
     --accepted: #138E25;
     --rejected: #AA0F0F;
-    --pending: #F28806;
+    --pending: #F2B94B;
+    --matched: #F26D6D;
 
     /* Typography */
     --fontPrimary: 'Urbanist', sans-serif;
@@ -219,11 +220,11 @@ html {
 
 .profileSmall {
     display: inline-block;
-    width: 40px;
-    height: 40px;
     border-radius: 50%;
     margin-right: 8px;
     vertical-align: middle;
+    flex-shrink: 0;
+    object-fit: cover;
 }
 
 .cardLabel {
@@ -358,6 +359,15 @@ html {
     font-size: 14px;
 }
 
+.vouchHistoryTable th:nth-child(1),
+.vouchHistoryTable td:nth-child(1) { width: 45%; }
+.vouchHistoryTable th:nth-child(2),
+.vouchHistoryTable td:nth-child(2) { width: 15%; }
+.vouchHistoryTable th:nth-child(3),
+.vouchHistoryTable td:nth-child(3) { width: 20%; }
+.vouchHistoryTable th:nth-child(4),
+.vouchHistoryTable td:nth-child(4) { width: 20%; }
+
 .vouchHistoryTable {
     width: 100%;
     border-collapse: collapse;
@@ -378,9 +388,29 @@ html {
     font-weight: 300;
 }
 
+.vouchHistoryTable thead,
+.vouchHistoryTable tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.vouchHistoryTable thead {
+    width: calc(100% - 8px);
+}
+
+.vouchHistoryTable tbody {
+    display: block;
+    max-height: 330px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--sunkissed) var(--dove);
+}
+
 .historyNameCell {
     display: flex;
     align-items: center;
+    gap: 8px;
 }
 
 .statusCell { 
@@ -408,12 +438,17 @@ html {
     font-weight: 400;
 }
 
+.statusMatched {
+    color: var(--matched);
+    font-weight: 700;
+}
+
 .statusAccepted { 
     color: var(--accepted); 
 }
 
-.statusPending { 
-    color: var(--pending); 
+.statusPending {
+    color: var(--pending);
 }
 
 .statusRejected { 

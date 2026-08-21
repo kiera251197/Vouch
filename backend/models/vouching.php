@@ -249,22 +249,20 @@ class Vouching {
 
 
 
-
-
     // Records a matchmaker's Vouch or Veto decision on a candidate
     public function reviewCandidate(int $vouchingId, int $matchmakerUserId, string $status, ?string $note): bool {
         $check = $this->db->prepare("
-            SELECT v.vouching_id 
+            SELECT v.vouching_id, v.requesting_single_id, v.candidate_user_id, v.reciever_matchmaker_id
             FROM Vouching v
             JOIN Account_Linking al ON al.single_user_id = v.requesting_single_id
             WHERE v.vouching_id = ? AND al.matchmaker_user_id = ?
         ");
         $check->bind_param("ii", $vouchingId, $matchmakerUserId);
         $check->execute();
-        $owns = $check->get_result()->fetch_assoc();
+        $vouchRow = $check->get_result()->fetch_assoc();
         $check->close();
 
-        if (!$owns) {
+        if (!$vouchRow) {
             return false;
         }
 
@@ -277,6 +275,84 @@ class Vouching {
         $success = $stmt->execute();
         $stmt->close();
 
+        if ($success && $status === 'accepted') {
+            $requestingSingleId = (int)$vouchRow['requesting_single_id'];
+            $candidateUserId    = (int)$vouchRow['candidate_user_id'];
+
+            // Forward to the candidate's own matchmaker so they get a turn too
+            file_put_contents(__DIR__ . '/../../debug.log', date('Y-m-d H:i:s') . " review: reciever_matchmaker_id=" . var_export($vouchRow['reciever_matchmaker_id'], true) . "\n", FILE_APPEND);
+            if (!empty($vouchRow['reciever_matchmaker_id'])) {
+                $this->forwardProfileToReceivingMatchmaker($candidateUserId, $requestingSingleId);
+            }
+
+            // if the other side already vouched back, mark both rows as a mutual match
+            $this->checkAndMarkMutualMatch($vouchingId, $requestingSingleId, $candidateUserId);
+        }
+
         return $success;
+    }
+
+    // Creates a new pending Vouching entry so the candidate's Matchmaker can review the original requesting Single
+    private function forwardProfileToReceivingMatchmaker(int $candidateUserId, int $originalSingleId): void {
+        $debugPath = __DIR__ . '/../../debug.log';
+        file_put_contents($debugPath, date('Y-m-d H:i:s') . " forward: called with candidate=$candidateUserId original=$originalSingleId\n", FILE_APPEND);
+
+        $check = $this->db->prepare("
+            SELECT vouching_id FROM Vouching 
+            WHERE requesting_single_id = ? AND candidate_user_id = ?
+        ");
+        $check->bind_param("ii", $candidateUserId, $originalSingleId);
+        $check->execute();
+        if ($row = $check->get_result()->fetch_assoc()) {
+            $check->close();
+            file_put_contents($debugPath, date('Y-m-d H:i:s') . " forward: BLOCKED - existing row already at vouching_id={$row['vouching_id']}\n", FILE_APPEND);
+            return; 
+        }
+        $check->close();
+
+        $senderStmt = $this->db->prepare("
+            SELECT matchmaker_user_id FROM Account_Linking 
+            WHERE single_user_id = ? AND matchmaker_user_id IS NOT NULL
+        ");
+        $senderStmt->bind_param("i", $candidateUserId);
+        $senderStmt->execute();
+        $senderRow = $senderStmt->get_result()->fetch_assoc();
+        $senderStmt->close();
+
+        if (!$senderRow) {
+            file_put_contents($debugPath, date('Y-m-d H:i:s') . " forward: BLOCKED - no linked matchmaker found for candidate=$candidateUserId\n", FILE_APPEND);
+            return;
+        }
+
+        file_put_contents($debugPath, date('Y-m-d H:i:s') . " forward: INSERTING pending row, matchmaker={$senderRow['matchmaker_user_id']}\n", FILE_APPEND);
+
+        $stmt = $this->db->prepare("
+            INSERT INTO Vouching (sender_matchmaker_id, reciever_matchmaker_id, requesting_single_id, candidate_user_id, status)
+            VALUES (?, NULL, ?, ?, 'pending')
+        ");
+        $matchmakerId = (int)$senderRow['matchmaker_user_id'];
+        $stmt->bind_param("iii", $matchmakerId, $candidateUserId, $originalSingleId);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    // If the reciprocal row (B->A) is also 'accepted', flip both rows to 'matched'
+    private function checkAndMarkMutualMatch(int $vouchingId, int $requestingSingleId, int $candidateUserId): void {
+        $stmt = $this->db->prepare("
+            SELECT vouching_id FROM Vouching
+            WHERE requesting_single_id = ? AND candidate_user_id = ? AND status = 'accepted'
+        ");
+        $stmt->bind_param("ii", $candidateUserId, $requestingSingleId);
+        $stmt->execute();
+        $reciprocal = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if ($reciprocal) {
+            $reciprocalId = (int)$reciprocal['vouching_id'];
+            $update = $this->db->prepare("UPDATE Vouching SET status = 'matched' WHERE vouching_id IN (?, ?)");
+            $update->bind_param("ii", $vouchingId, $reciprocalId);
+            $update->execute();
+            $update->close();
+        }
     }
 }
