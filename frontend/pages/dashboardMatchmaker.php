@@ -34,10 +34,15 @@ $myProfile = [
 
 // Single Profile
 $sStmt = $db->prepare("
-    SELECT p.user_id, p.full_name, p.bio, p.picture_url
+    SELECT p.user_id, p.full_name, p.bio, p.picture_url,
+           p.location, p.gender, p.occupation, p.hobbies, p.hook,
+           (YEAR(CURDATE()) - CAST(p.birth_year AS UNSIGNED)) AS age,
+           GROUP_CONCAT(ph.photo_url ORDER BY ph.photo_id ASC SEPARATOR ',') AS gallery_photos
     FROM Account_Linking al
     JOIN Profiles p ON al.single_user_id = p.user_id
+    LEFT JOIN Profile_Photos ph ON ph.user_id = p.user_id
     WHERE al.matchmaker_user_id = ?
+    GROUP BY p.user_id
 ");
 $sStmt->bind_param("i", $matchmakerUserId);
 $sStmt->execute();
@@ -45,10 +50,31 @@ $singleData = $sStmt->get_result()->fetch_assoc();
 $sStmt->close();
 
 $singleUserId = $singleData['user_id'] ?? null;
+
+$singlePhotos = [];
+if (!empty($singleData['picture_url'])) {
+    $singlePhotos[] = $singleData['picture_url'];
+}
+if (!empty($singleData['gallery_photos'])) {
+    foreach (explode(',', $singleData['gallery_photos']) as $gPhoto) {
+        $gPhoto = trim($gPhoto);
+        if (!empty($gPhoto) && !in_array($gPhoto, $singlePhotos)) {
+            $singlePhotos[] = $gPhoto;
+        }
+    }
+}
+
 $mySingle = [
     'name' => $singleData['full_name'] ?? 'No Single Linked',
     'bio' => $singleData['bio'] ?? 'Waiting for a Single to connect with your link code.',
-    'photo' => $singleData['picture_url'] ?? null
+    'photo' => $singleData['picture_url'] ?? null,
+    'photos' => $singlePhotos,
+    'age' => $singleData['age'] ?? '-',
+    'location' => $singleData['location'] ?? '-',
+    'gender' => $singleData['gender'] ?? '-',
+    'occupation' => $singleData['occupation'] ?? '-',
+    'hobbies' => hobbyLabel($singleData['hobbies'] ?? null),
+    'lookingFor' => $singleData['hook'] ?? 'Not specified.'
 ];
 
 // Vouch History & Candidate Records
@@ -142,8 +168,8 @@ $currentCandidate = $pendingCandidates[0] ?? [
         <div class="dashboardGrid">
         
             <!-- My Single -->
-            <div class="dashCard" id="mySingleCard">
-                <a href="setupProfile.php" class="editIconBtn" title="Edit Single Profile"><img src="../assets/images/pinkEditIcon.png" alt="Edit"></a>
+            <div class="dashCard" id="mySingleCard" onclick="openSingleProfileModal()" style="cursor: pointer;">
+                <a href="setupProfile.php" class="editIconBtn" title="Edit Single Profile" onclick="event.stopPropagation();"><img src="../assets/images/pinkEditIcon.png" alt="Edit"></a>
                 <?php if (!empty($mySingle['photo'])): ?>
                     <img src="<?= htmlspecialchars($mySingle['photo']) ?>" class="profileImg" alt="Single Photo" style="object-fit: cover;">
                 <?php else: ?>
@@ -387,5 +413,6 @@ $currentCandidate = $pendingCandidates[0] ?? [
     </script>
 
 <?php include 'browseCandidatesModal.php'; ?>
+<?php include 'viewSingleProfileModal.php'; ?>
 </body>
 </html>
