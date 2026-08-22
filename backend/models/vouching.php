@@ -1,17 +1,17 @@
 <?php
 function hobbyLabel(?string $key): string {
     static $labels = [
-        'art'       => 'Art & Creative',
+        'art' => 'Art & Creative',
         'thrifting' => 'Thrifting & Vintage',
-        'plants'    => 'Plants & Gardening',
-        'outdoors'  => 'Hiking & Camping',
-        'reading'   => 'Reading & Bookstores',
-        'music'     => 'Music & Concerts',
-        'travel'    => 'Travel',
-        'fitness'   => 'Fitness & Sports',
-        'cooking'   => 'Cooking & Baking',
-        'gaming'    => 'Gaming',
-        'coffee'    => 'Coffee & Cafe Hopping',
+        'plants' => 'Plants & Gardening',
+        'outdoors' => 'Hiking & Camping',
+        'reading' => 'Reading & Bookstores',
+        'music' => 'Music & Concerts',
+        'travel' => 'Travel',
+        'fitness' => 'Fitness & Sports',
+        'cooking' => 'Cooking & Baking',
+        'gaming' => 'Gaming',
+        'coffee' => 'Coffee & Cafe Hopping',
     ];
 
     if (!$key) return '-';
@@ -201,6 +201,7 @@ class Vouching {
 
 
 
+    
 
 
     // Retrieves candidate still awaiting for Matchmaker's review

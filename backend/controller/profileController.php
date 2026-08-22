@@ -77,42 +77,7 @@ class ProfileController {
         exit();
     }
 
-    // // Cloudinary upload for profile photos
-    // private function uploadToCloudinary(string $tmpPath, string $folder): ?string {
-    //     $apiUrl = "https://api.cloudinary.com/v1_1/{$this->cloudName}/image/upload";
 
-    //     $postData = [
-    //         'file'          => new CURLFile($tmpPath),
-    //         'upload_preset' => $this->uploadPreset,
-    //         'folder'        => 'vouch/' . $folder
-    //     ];
-
-    //     $ch = curl_init();
-    //     curl_setopt($ch, CURLOPT_URL, $apiUrl);
-    //     curl_setopt($ch, CURLOPT_POST, true);
-    //     curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    //     $response = curl_exec($ch);
-    //     curl_close($ch);
-
-    //     if (!$response) return null;
-
-    //     $json = json_decode($response, true);
-        
-    //     // Returns the secure HTTPS Cloudinary image URL
-    //     return $json['secure_url'] ?? null;
-    // }
-
-    // // Handles single file upload to Cloudinary
-    // private function uploadFile(?array $file, int $userId, string $folder): ?string {
-    //     if (!$file || empty($file['name']) || $file['error'] !== UPLOAD_ERR_OK) return null;
-
-    //     $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    //     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) return null;
-
-    //     return $this->uploadToCloudinary($file['tmp_name'], $folder);
-    // }
     
     // Handles single file upload to Cloudinary
     private function uploadFile(?array $file, int $userId, string $folder): ?string {
