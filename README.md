@@ -55,8 +55,8 @@ This project is built using a PHP/MySQL stack with Cloudinary for image hosting:
 
 ### ERD
 
-![ERD Diagram](https://github.com/kiera251197/Vouch/blob/2095108e5b844fc04637374be868f42ceb467a56/frontend/assets/githubImages/vouchERD.png)
-
+![ERD Diagram](
+https://github.com/kiera251197/Vouch/blob/fe9ce43341211f9a103cba827d51ad2d6e10b967/frontend/assets/githubImages/Vouch%20Updated%20ERD.jpg)
 ---
 
 ## Getting Started
