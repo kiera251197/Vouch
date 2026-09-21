@@ -4,8 +4,6 @@
 
 ### Kiera Poley 251197
 
-Skip the bad setups. Trust your inner circle.
-
 ## Table of Contents
 
 - [About the Project](#about-the-project)
@@ -64,10 +62,10 @@ https://github.com/kiera251197/Vouch/blob/fe9ce43341211f9a103cba827d51ad2d6e10b9
 ### Prerequisites
 
 - [XAMPP](https://www.apachefriends.org/) (or any local PHP + MySQL environment)
-- PHP 8+
-- MySQL / MariaDB
+- PHP
+- MySQL
 - A [Cloudinary](https://cloudinary.com/) account (free tier is fine) with an **unsigned** upload preset
-- A code editor (e.g. VS Code)
+- A code editor (eg. VS Code)
 
 ### How to Install
 
