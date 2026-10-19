@@ -128,15 +128,15 @@ class Vouching {
 
             $candidates[] = [
                 'candidate_id' => $row['user_id'],
-                'name'        => $row['full_name'],
-                'photos'      => $photos,
-                'age'         => $row['age'] ?? '-',
-                'location'    => $row['location'] ?? '-',
-                'gender'      => $row['gender'] ?? '-',
-                'occupation'  => $row['occupation'] ?? '-',
-                'hobbies'     => hobbyLabel($row['hobbies']),
-                'bio'         => $row['bio'] ?? 'No bio set yet.',
-                'lookingFor'  => $row['hook'] ?? 'Not specified.'
+                'name' => $row['full_name'],
+                'photos' => $photos,
+                'age' => $row['age'] ?? '-',
+                'location' => $row['location'] ?? '-',
+                'gender' => $row['gender'] ?? '-',
+                'occupation' => $row['occupation'] ?? '-',
+                'hobbies' => hobbyLabel($row['hobbies']),
+                'bio' => $row['bio'] ?? 'No bio set yet.',
+                'lookingFor' => $row['hook'] ?? 'Not specified.'
             ];
         }
         $stmt->close();
