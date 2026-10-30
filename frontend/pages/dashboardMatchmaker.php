@@ -188,7 +188,7 @@ $currentCandidate = $pendingCandidates[0] ?? [
             <div class="dashCard" id="mySingleCard" onclick="openSingleProfileModal()" style="cursor: pointer;">
                 <a href="setupProfile.php" class="editIconBtn" title="Edit Single Profile" onclick="event.stopPropagation();"><img src="../assets/images/pinkEditIcon.png" alt="Edit"></a>
                 <?php if (!empty($mySingle['photo'])): ?>
-                    <img src="<?= htmlspecialchars($mySingle['photo']) ?>" class="profileImg" alt="Single Photo" style="object-fit: cover;">
+                    <img src="<?= htmlspecialchars($mySingle['photo']) ?>" class="profileImg" id="sProfileImg" alt="Single Photo" style="object-fit: cover;">
                 <?php else: ?>
                     <div class="profileImg" style="background-color: var(--petal);"></div>
                 <?php endif; ?>
@@ -205,7 +205,7 @@ $currentCandidate = $pendingCandidates[0] ?? [
             <div class="dashCard" id="myProfileCard">
                 <a href="setUpProfile.php" class="editIconBtn" title="Edit Profile"><img src="../assets/images/orangeEditIcon.png" alt="Edit"></a>
                 <?php if (!empty($myProfile['photo'])): ?>
-                    <img src="<?= htmlspecialchars($myProfile['photo']) ?>" class="profileImg" alt="Matchmaker Photo" style="object-fit: cover;">
+                    <img src="<?= htmlspecialchars($myProfile['photo']) ?>" class="profileImg" id="mProfileImg" alt="Matchmaker Photo" style="object-fit: cover;">
                 <?php else: ?>
                     <div class="profileImg" style="background-color: var(--sunkissed);"></div>
                 <?php endif; ?>

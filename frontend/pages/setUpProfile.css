@@ -139,6 +139,10 @@ h3 {
     color: var(--night);
 }
 
+.stepBlock h3, #stepTitle {
+  color: var(--dragonfruit) !important; 
+}
+
 small {
     display: block;
     color: var(--night);

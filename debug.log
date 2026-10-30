@@ -68,3 +68,6 @@
 2026-08-22 13:21:31 forward: called with candidate=65 original=75
 2026-08-22 13:21:31 forward: INSERTING pending row, matchmaker=66
 2026-08-22 13:22:13 review: reciever_matchmaker_id=NULL
+2026-10-30 12:36:08 review: reciever_matchmaker_id=39
+2026-10-30 12:36:08 forward: called with candidate=38 original=75
+2026-10-30 12:36:08 forward: INSERTING pending row, matchmaker=39

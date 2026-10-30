@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <img src="../assets/images/blackLogo.png" alt="vouch logo">
             </div>
             <h1>Let's Get Started!</h1>
-            <h3>MY DETAILS</h3>
+            <h3 id="stepTitle">MY DETAILS</h3>
 
             <div class="fieldRow">
                 <select name="birthYear" class="fieldHalf">
@@ -191,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <img src="../assets/images/blackLogo.png" alt="vouch logo">
             </div>
             <h1>Let's Get Started!</h1>
-            <h3>DATING PREFERENCES</h3>
+            <h3 id="stepTitle">DATING PREFERENCES</h3>
 
             <div class="fieldRow">
                 <select name="targetAges" class="fieldHalf">
@@ -211,13 +211,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
             </div>
 
-            <h3>THE HOOK</h3>
+            <h3 id="stepTitle">THE HOOK</h3>
             <small>What attracts you in a potential partner?</small>
             <div class="field">
                 <input type="text" name="hook" placeholder="Loves coffee dates, thrifting and spontaneous road trips">
             </div>
 
-            <h3>MY BIO</h3>
+            <h3 id="stepTitle">MY BIO</h3>
             <small>This will be displayed to potential matches</small>
             <div class="field">
                 <input type="text" name="bio" placeholder="Looking for someone to swap vinyl records with">
@@ -246,7 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <h1>Let's Get Started!</h1>
 
-            <h3>PROFILE PHOTO</h3>
+            <h3 id="stepTitle">PROFILE PHOTO</h3>
             <label class="uploadBox">
                 <div class="uploadIcon">
                     <img src="../assets/images/uploadIcon.png" alt="Upload Icon">
@@ -255,7 +255,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="file" id="mainProfileInput" name="profilePhoto" accept="image/*" class="uploadInput" onchange="showFileName(this, this.closest('.uploadBox'))">
             </label>
 
-            <h3>GALLERY</h3>
+            <h3 id="stepTitle">GALLERY</h3>
             <small>Upload up to 5 photos of yourself</small>
             <label class="uploadBox">
                 <div class="uploadIcon">
@@ -288,7 +288,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <h1>Bring In Your Circle</h1>
 
-            <h3>LINKING</h3>
+            <h3 id="stepTitle">LINKING</h3>
             <small>Give your matchmaker this code to successfully link your profiles</small>
 
             <div class="codeDisplay" id="codeDisplay"><?= implode(' ', str_split($generatedCode)) ?></div>
@@ -319,7 +319,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <img src="../assets/images/blackLogo.png" alt="vouch logo">
             </div>
             <h1>Let's Get Started!</h1>
-            <h3>MY DETAILS</h3>
+            <h3 id="stepTitle">MY DETAILS</h3>
             <div class="field">
                 <select name="relationship">
                     <option value="" disabled selected>Relationship to Single</option>
@@ -332,7 +332,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
             </div>
 
-            <h3>PROFILE PHOTO</h3>
+            <h3 id="stepTitle">PROFILE PHOTO</h3>
             <label class="uploadBox">
                 <div class="uploadIcon">
                     <img src="../assets/images/uploadIcon.png" alt="Upload Icon">
@@ -341,7 +341,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="file" name="matchmakerProfilePhoto" accept="image/*" class="uploadInput" onchange="showFileName(this, this.closest('.uploadBox'))">
             </label>
 
-            <h3>MY CREDENTIALS</h3>
+            <h3 id="stepTitle">MY CREDENTIALS</h3>
             <small>Why are you the perfect Matchmaker for this profile?</small>
             <div class="field">
                 <input type="text" name="credentials" placeholder="I've known her for 10 years and know her exact type">
@@ -369,7 +369,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <img src="../assets/images/blackLogo.png" alt="vouch logo">
             </div>
             <h1>Bring In Your Circle</h1>
-            <h3>LINKING ACCOUNT</h3>
+            <h3 id="stepTitle">LINKING ACCOUNT</h3>
             <small>Input the unique 5 digit code to successfully link your profiles together</small>
 
             <div class="field codeInputWrap">

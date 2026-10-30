@@ -181,7 +181,7 @@ $waitingOnThemCount = count(array_filter($vouchHistory, fn($v) => strtolower($v[
             <div class="dashCard" id="myProfileCard">
                 <a href="setupProfile.php" class="editIconBtn" title="Edit my profile"><img src="../assets/images/pinkEditIcon.png" alt="Edit"></a>
                 <?php if (!empty($myProfile['photo'])): ?>
-                    <img src="<?= htmlspecialchars($myProfile['photo']) ?>" class="profileImg" alt="Profile Photo">
+                    <img src="<?= htmlspecialchars($myProfile['photo']) ?>" class="profileImg" id="sProfileImg" alt="Profile Photo">
                 <?php else: ?>
                     <div class="profileImg" style="background-color: var(--petal);"></div>
                 <?php endif; ?>
@@ -198,7 +198,7 @@ $waitingOnThemCount = count(array_filter($vouchHistory, fn($v) => strtolower($v[
             <div class="dashCard" id="myMatchmakerCard">
                 <a href="setUpProfile.php" class="editIconBtn" title="Edit"><img src="../assets/images/orangeEditIcon.png" alt="Edit"></a>
                 <?php if (!empty($myMatchmaker['photo'])): ?>
-                    <img src="<?= htmlspecialchars($myMatchmaker['photo']) ?>" class="profileImg" alt="Matchmaker Photo" style="object-fit: cover;">
+                    <img src="<?= htmlspecialchars($myMatchmaker['photo']) ?>" class="profileImg" id="mProfileImg" alt="Matchmaker Photo" style="object-fit: cover;">
                 <?php else: ?>
                     <div class="profileImg" style="background-color: var(--sunkissed);"></div>
                 <?php endif; ?>

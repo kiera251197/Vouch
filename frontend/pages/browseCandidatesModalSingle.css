@@ -206,6 +206,8 @@
     flex-direction: column;
     justify-content: space-between;
     padding-right: 8px;
+    margin-top: 64px;
+    margin-bottom: 64px;
 }
 
 .modalHeaderRow {
