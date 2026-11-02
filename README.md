@@ -187,4 +187,4 @@ Vouch reimagines matchmaking as a shared social experience putting a trusted thi
 
 ## Acknowledgements
 
-Cloudinary, XAMPP/phpMyAdmin, and my lecturer, Tsungai Katsuro for guidance throughout the project.
+Cloudinary, XAMPP/phpMyAdmin, AI for aid in debugging + learning of MySQL and my lecturer, Tsungai Katsuro for guidance throughout the project.
